@@ -1,0 +1,1 @@
+# dep-right-censored-covariate
