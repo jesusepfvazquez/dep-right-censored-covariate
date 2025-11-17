@@ -27,6 +27,8 @@
 #'   a full Surv formula such as \code{Surv(W, D) ~ Z1 + Z2} or a right-hand-side
 #'   formula such as \code{~ Z1 + Z2}, in which case the left-hand side
 #'   \code{Surv(W, D)} is filled in automatically.
+#'' @param trace Optional, set equal to 1 if you want the trace of the optimx model.
+#'    Leave at 0 if you do not want a trace
 #'
 #' @return A list with component
 #' \describe{
@@ -42,11 +44,12 @@
 #' @importFrom survival Surv survreg
 #' @importFrom optimx optimx coef<-
 #' @export
-estimate_beta_likelihood_optimx <- function(
+estimate_beta_mle <- function(
     data_yXZ,
     model,
     aw_var   = "AW",
-    model_xz = NULL
+    model_xz = NULL,
+    trace = 0
 ) {
 
   ## basic checks
@@ -227,7 +230,7 @@ estimate_beta_likelihood_optimx <- function(
     fn      = loglik_fn,
     method  = "Nelder-Mead",
     control = list(
-      trace    = 0,
+      trace    = trace,
       maximize = TRUE,  # maximize log-likelihood
       abstol   = 1e-8,
       reltol   = 1e-8
@@ -236,10 +239,11 @@ estimate_beta_likelihood_optimx <- function(
   )
 
   ######## RETURN ESTIMATES ##########
-  theta_hat <- as.numeric(optimx::coef(opt_result)[1, ])
+  theta_hat <- as.numeric(coef(opt_result)[1, ])
 
   # transform psi back to original scale (component p_beta + 1 is log(psi))
   theta_hat[p_beta + 1] <- exp(theta_hat[p_beta + 1])
-
-  list(beta_est = theta_hat)
+  beta_hat = theta_hat[1:(p_beta + 1)]
+  gamma_hat = theta_hat[(p_beta + 2):length(theta_hat)]
+  return(list(beta_est = beta_hat, gamma_est = gamma_hat))
 }

@@ -33,7 +33,8 @@
 #' @importFrom numDeriv jacobian hessian
 #' @importFrom parallel mclapply
 #' @export
-var_beta_aipw_lambda <- function(data_yXZ, mytheta) {
+var_beta_aipw_lambda <- function(data_yXZ,
+                                 mytheta) {
 
   ## --- basic checks & unpack theta ---
   if (length(mytheta) != 4L) {
@@ -45,23 +46,24 @@ var_beta_aipw_lambda <- function(data_yXZ, mytheta) {
   # outcome model is hard-coded as y ~ AW + Z
   model_outcome <- y ~ AW + Z
 
-  ## --- Step 0: fit censoring model C | (Y, Z) via Weibull AFT ---
+  ## --- Step 0: fit censoring model C | (Y, Z) via Weibull AFT and obtain Pr(D=1) ---
   wr <- survival::survreg(
     Surv(W, 1 - D) ~ y + Z,
     data = data_yXZ,
     dist = "weibull"
   )
+
+  # IPW weights: S_C(W | covariates) under Weibull(AFT)
+  shape.c <- 1 / wr$scale
+  lp_c  <- exp(wr$linear.predictors)  # scale parameter
+  data_yXZ$myp <- exp(-(data_yXZ$W / lp_c)^shape.c)
+
   myalpha <- c(stats::coef(wr), wr$scale)  # length 4
   myxi    <- c(mybeta, myalpha)
 
-  ## --- Step 1: Lambda-related preliminaries & IPW weights ---
+  ## --- Step 1: Lambda-related preliminaries ---
   sdXZ   <- sqrt(stats::var(data_yXZ$W[data_yXZ$D == 1]))
   meanXZ <- mean(data_yXZ$W[data_yXZ$D == 1])
-
-  if (!("myp_ywz" %in% names(data_yXZ))) {
-    stop("data_yXZ must contain 'myp_ywz' (AFT-based weights) for var_beta_aipw_lambda().")
-  }
-  data_yXZ$myp <- data_yXZ$myp_ywz
 
   ## --- Step 2: helper functions (Gumbel representation of Weibull AFT) ---
 
@@ -143,7 +145,7 @@ var_beta_aipw_lambda <- function(data_yXZ, mytheta) {
         e  <- Y - mu
         dotbeta <- (e / psi^2) %*% X
         myp <- pi_xz_func.b(data. = data, myalpha. = myalpha.)
-        matrix(dotbeta * (D / myp), ncol = 1)
+        matrix(dotbeta*c(D/myp), ncol = 1)
       }
 
       numDeriv::jacobian(
@@ -225,7 +227,7 @@ var_beta_aipw_lambda <- function(data_yXZ, mytheta) {
       CCscore <- function() {
         mu <- X %*% theta
         e  <- Y - mu
-        as.numeric((e / psi^2) * X)
+        as.numeric(c(e / psi^2) * X)
       }
 
       psi_hat_i <- function() {
@@ -290,7 +292,7 @@ var_beta_aipw_lambda <- function(data_yXZ, mytheta) {
     CCscore <- function() {
       mu <- X %*% theta
       e  <- Y - mu
-      as.numeric((e / psi^2) * X)
+      as.numeric( c(e / psi^2) * X)
     }
 
     psi_hat_i <- function() {

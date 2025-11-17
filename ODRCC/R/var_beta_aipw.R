@@ -22,7 +22,7 @@
 #'     \item \code{y}: outcome,
 #'     \item \code{A}: auxiliary covariate used to form \code{AW = A - X},
 #'     \item \code{W}: observed covariate \code{W = min(X, C)},
-#'     \item \code{D}: indicator \code{I(X \le C)},
+#'     \item \code{D}: indicator \code{I(X <= C)},
 #'     \item all covariates appearing in \code{model},
 #'     \item all covariates appearing in \code{model_weights} and \code{model_xz}.
 #'   }
@@ -36,10 +36,6 @@
 #'   model for \code{C | (Y, Z, ...)}. Typically a RHS-only formula such as
 #'   \code{~ y + Z}, which is internally expanded to
 #'   \code{Surv(W, 1 - D) ~ y + Z}.
-#' @param gamma_x Numeric vector of parameters for the \code{X | Z} AFT model:
-#'   \code{gamma_x = c(gamma_coef, shape_par)}, where \code{gamma_coef} indexes
-#'   \code{log-mean(X | Z)} and \code{shape_par} is the AFT scale parameter
-#'   used via \code{shape.x = 1 / shape_par}.
 #' @param model_xz \code{\link[stats]{formula}} for the covariate structure
 #'   of \code{X | Z}, typically RHS-only such as \code{~ Z}. Only the RHS is
 #'   used.
@@ -61,13 +57,12 @@
 #' @importFrom survival Surv survreg
 #' @importFrom numDeriv jacobian
 #' @export
-var_beta_aipw_est <- function(
-    data_yXZ,
-    theta,
-    model,
-    model_weights,
-    gamma_x,
-    model_xz,
+var_beta_aipw <- function(
+    data_yXZ=dat,
+    theta = theta_aipw,
+    model = model,
+    model_weights = model_weights,
+    model_xz = model_xz,
     aw_var  = "AW",
     lbound  = 0,
     ubound  = 50
@@ -91,20 +86,24 @@ var_beta_aipw_est <- function(
   X_full <- stats::model.matrix(model, data_yXZ)
   p_beta <- ncol(X_full)
 
-  if (length(theta) != p_beta + 1) {
-    stop("Length(theta) must be p_beta + 1 (beta, psi). Here p_beta = ",
-         p_beta, ", but length(theta) = ", length(theta))
+  ## ----------------- 0. Event model X | Z ----------------- ##
+  # Build censoring formula: Surv(W, 1 - D) ~ ...
+  if (length(model_xz) == 2L) {
+    rhs_w        <- deparse(model_xz[[2]])
+    event_formula <- stats::as.formula(paste("Surv(W, D) ~", rhs_w))
+  } else {
+    rhs_w        <- deparse(model_xz[[3]])
+    event_formula <- stats::as.formula(paste("Surv(W, D) ~", rhs_w))
   }
 
-  beta <- theta[1:p_beta]
-  psi  <- theta[p_beta + 1]
+  wr_xz <- survival::survreg(
+    formula = event_formula,
+    data    = data_yXZ,
+    dist    = "weibull"
+  )
 
-  if (length(gamma_x) < 2) {
-    stop("'gamma_x' must contain at least coefficients and a final shape parameter.")
-  }
-  gamma_coef      <- gamma_x[1:(length(gamma_x) - 1)]
-  gamma_shape_par <- gamma_x[length(gamma_x)]
-  shape.x         <- 1 / gamma_shape_par
+  gamma_coef  <- as.numeric(coef(wr_xz))
+  shape.x     <- 1 / wr_xz$scale
 
   ## ----------------- 1. Censoring model C | (Y, Z, ...) ----------------- ##
   # Build censoring formula: Surv(W, 1 - D) ~ ...
@@ -178,6 +177,9 @@ var_beta_aipw_est <- function(
     meanCYZ_i <- data_row$meanCYZ
 
     # complete-case score (for beta)
+    # psi = beta.[4]
+    # beta. = beta.[-4]
+
     mu <- as.numeric(X_row %*% beta.)
     e  <- Y - mu
     cc_score <- as.numeric((e / psi^2) * X_row)  # length p_beta
@@ -247,7 +249,7 @@ var_beta_aipw_est <- function(
     (D_i / myp_i) * cc_score + (1 - D_i / myp_i) * aug_vec
   }
 
-  ## ----------------- 4. Sandwich A and B for β ----------------- ##
+  ## ----------------- 4. Sandwich A and B for beta ----------------- ##
 
   # A = sum_i d phi_i / d beta^T
   calculate_A <- function() {
@@ -270,6 +272,8 @@ var_beta_aipw_est <- function(
     Reduce("+", parts)
   }
 
+  beta = theta[1:3]
+  psi = theta[4]
   A_mat <- calculate_A()
   B_mat <- calculate_B()
   A_inv <- solve(A_mat)
@@ -278,10 +282,11 @@ var_beta_aipw_est <- function(
 
   se_beta <- sqrt(diag(sand_var))
 
-  list(
+  return(list(
     beta_est     = beta,
     psi_est      = psi,
     se_beta      = se_beta,
     sandwich_var = sand_var
-  )
+  ))
+
 }

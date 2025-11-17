@@ -21,8 +21,13 @@
 #' @param model Formula for the outcome, currently assumed to be
 #'   \code{y ~ AW + Z}. The function checks that the design matrix has
 #'   exactly three columns: intercept, AW, and Z, in that order.
-#' @param myweight Character; which weight model to use:
-#'   \code{"oracle"}, \code{"aft"}, \code{"uniform"}, or \code{"logit"}.
+#' @param model_weights A \code{\link[stats]{formula}} specifying the censoring
+#'   model for \code{C | (Y, Z, ...)}. Typically a right-hand-side only formula,
+#'   such as \code{~ y + Z}, which is internally expanded to
+#'   \code{Surv(W, 1 - D) ~ y + Z}.
+#' @param aw_var Character string giving the name of the exposure covariate in
+#'   \code{model} that equals \code{A - X} (default \code{"AW"}). This must
+#'   appear in \code{model} and in \code{data_yXZ}.
 #'
 #' @return A list with components:
 #' \describe{
@@ -34,15 +39,19 @@
 #' @importFrom stats lm coef model.matrix model.response var
 #' @importFrom geex m_estimate setup_root_control setup_deriv_control
 #' @export
-estimate_beta_aipw_lambda_close <- function(
-    data_yXZ,
-    model,
-    myweight = "oracle"
+estimate_beta_aipw_lambda <- function(
+    data_yXZ = dat,
+    model = model,
+    model_weights = model_weights,
+    aw_var  = "AW"
 ) {
 
   ## ----- basic checks -----
   if (!inherits(model, "formula")) {
     stop("'model' must be a formula, e.g. y ~ AW + Z.")
+  }
+  if (!inherits(model_weights, "formula")) {
+    stop("'model_weights' must be a formula, e.g. ~ y + Z.")
   }
 
   # outcome design to check structure
@@ -66,31 +75,30 @@ estimate_beta_aipw_lambda_close <- function(
   sdXZ   <- sqrt(stats::var(data_yXZ$W[idx_cc]))
   meanXZ <- mean(data_yXZ$W[idx_cc])
 
-  ## ------------------------------------------------------
-  ## 2. Choose weight p_i
-  ## ------------------------------------------------------
-  if (!("myp_ywz_oracle" %in% names(data_yXZ))) {
-    stop("data_yXZ must contain 'myp_ywz_oracle' for myweight = 'oracle'.")
+  ## ----------------- 2. Censoring model C | (Y, Z, ...) ----------------- ##
+  # Build censoring formula: Surv(W, 1 - D) ~ ...
+  if (length(model_weights) == 2L) {
+    rhs_w        <- deparse(model_weights[[2]])
+    cens_formula <- stats::as.formula(paste("Surv(W, 1 - D) ~", rhs_w))
+  } else {
+    rhs_w        <- deparse(model_weights[[3]])
+    cens_formula <- stats::as.formula(paste("Surv(W, 1 - D) ~", rhs_w))
   }
-  data_yXZ$myp <- data_yXZ$myp_ywz_oracle
-  if (myweight == "aft") {
-    if (!("myp_ywz" %in% names(data_yXZ))) {
-      stop("data_yXZ must contain 'myp_ywz' for myweight = 'aft'.")
-    }
-    data_yXZ$myp <- data_yXZ$myp_ywz
-  }
-  if (myweight == "uniform") {
-    if (!("myp_uniform" %in% names(data_yXZ))) {
-      stop("data_yXZ must contain 'myp_uniform' for myweight = 'uniform'.")
-    }
-    data_yXZ$myp <- data_yXZ$myp_uniform
-  }
-  if (myweight == "logit") {
-    if (!("myp_ywz_logit" %in% names(data_yXZ))) {
-      stop("data_yXZ must contain 'myp_ywz_logit' for myweight = 'logit'.")
-    }
-    data_yXZ$myp <- data_yXZ$myp_ywz_logit
-  }
+
+  wr <- survival::survreg(
+    formula = cens_formula,
+    data    = data_yXZ,
+    dist    = "weibull"
+  )
+
+  shape.c <- 1 / wr$scale
+
+  # meanCYZ: on original AFT scale, used in augmentation
+  data_yXZ$meanCYZ <- exp(wr$linear.predictors)
+
+  # IPW weights: S_C(W | covariates) under Weibull(AFT)
+  lp_c  <- exp(wr$linear.predictors)  # scale parameter
+  data_yXZ$myp <- exp(-(data_yXZ$W / lp_c)^shape.c)
 
   ## ------------------------------------------------------
   ## 3. Initial estimates via IPW
@@ -253,12 +261,10 @@ estimate_beta_aipw_lambda_close <- function(
   # geex vcov gives variance only for beta (3x3)
   se_hat <- sqrt(diag(results@vcov))
   se_mat <- matrix(se_hat, nrow = 1)
+  beta_mat <- c(beta_hat, psi_hat)
 
-  beta_mat <- rbind(beta_hat, psi_hat)
-  beta_mat <- t(beta_mat)  # 1 x 4 (beta0, beta1, beta2, psi)
-
-  list(
+  return(list(
     beta_est = beta_mat,
-    se_est   = se_mat
+    se_est   = se_mat)
   )
 }

@@ -24,7 +24,7 @@
 #'     \item \code{y}: outcome,
 #'     \item \code{A}: auxiliary covariate used to form \code{AW = A - X},
 #'     \item \code{W}: observed covariate \code{W = min(X, C)},
-#'     \item \code{D}: indicator \code{I(X \le C)},
+#'     \item \code{D}: indicator \code{I(X <= C)},
 #'     \item columns for the covariates in \code{model},
 #'     \item columns for the covariates in \code{model_weights} and
 #'           \code{model_xz}.
@@ -35,11 +35,6 @@
 #'   model for \code{C | (Y, Z, ...)}. Typically a right-hand-side only formula,
 #'   such as \code{~ y + Z}, which is internally expanded to
 #'   \code{Surv(W, 1 - D) ~ y + Z}.
-#' @param gamma_x Numeric vector of parameters for the \code{X | Z} AFT model:
-#'   \code{gamma_x = c(gamma_coef, shape_par)}, where \code{gamma_coef} is the
-#'   coefficient vector for \code{log-mean(X | Z)} and \code{shape_par} is the
-#'   scale parameter in the AFT representation (we use
-#'   \code{shape.x = 1 / shape_par} as the Weibull shape for \code{X | Z}).
 #' @param model_xz A \code{\link[stats]{formula}} specifying the covariate
 #'   structure for \code{X | Z}. Typically right-hand-side only, e.g.
 #'   \code{~ Z}, meaning \code{log E[X | Z]} depends on those covariates. Only
@@ -67,7 +62,6 @@ estimate_beta_aipw <- function(
     data_yXZ,
     model,
     model_weights,
-    gamma_x,
     model_xz,
     aw_var  = "AW",
     lbound  = 0,
@@ -93,12 +87,24 @@ estimate_beta_aipw <- function(
   X_full <- stats::model.matrix(model, data_yXZ)
   p_beta <- ncol(X_full)
 
-  if (length(gamma_x) < 2) {
-    stop("'gamma_x' must contain at least coefficients and a final shape parameter.")
+  ## ----------------- 0. Event model X | Z ----------------- ##
+  # Build censoring formula: Surv(W, 1 - D) ~ ...
+  if (length(model_xz) == 2L) {
+    rhs_w        <- deparse(model_xz[[2]])
+    event_formula <- stats::as.formula(paste("Surv(W, D) ~", rhs_w))
+  } else {
+    rhs_w        <- deparse(model_xz[[3]])
+    event_formula <- stats::as.formula(paste("Surv(W, D) ~", rhs_w))
   }
-  gamma_coef      <- gamma_x[1:(length(gamma_x) - 1)]
-  gamma_shape_par <- gamma_x[length(gamma_x)]
-  shape.x         <- 1 / gamma_shape_par
+
+  wr_xz <- survival::survreg(
+    formula = event_formula,
+    data    = data_yXZ,
+    dist    = "weibull"
+  )
+
+  gamma_coef  <- as.numeric(coef(wr_xz))
+  shape.x     <- 1 / wr_xz$scale
 
   ## ----------------- 1. Censoring model C | (Y, Z, ...) ----------------- ##
   # Build censoring formula: Surv(W, 1 - D) ~ ...
@@ -277,8 +283,9 @@ estimate_beta_aipw <- function(
   )
 
   beta_hat <- as.numeric(results@estimates)
+  se_estimates <- matrix(sqrt(diag(results@vcov)), nrow = 1)
 
-  ## ----------------- 6. Re-estimate psi using β̂ and D = 1 ----------------- ##
+  ## ----------------- 6. Re-estimate psi using-beta and D = 1 ----------------- ##
   data_cc <- data_yXZ[data_yXZ$D == 1, , drop = FALSE]
   X_cc    <- stats::model.matrix(model, data_cc)
   psi_hat <- sqrt(
@@ -287,7 +294,7 @@ estimate_beta_aipw <- function(
 
   # return
   list(
-    beta_est = matrix(beta_hat, nrow = 1),
-    psi_est  = psi_hat
+    beta_est = matrix(c(beta_hat,psi_hat), nrow = 1),
+    beta_se = matrix(se_estimates, nrow = 1)
   )
 }

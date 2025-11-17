@@ -117,8 +117,7 @@ estimate_beta_ipw <- function(data_yXZ, model, model_weights) {
   #######################################################
   ## 6. Return estimates (recompute psi on D = 1 only)
   #######################################################
-  beta_estimates <- matrix(t(results@estimates), nrow = 1)
-
+  beta_estimates <- matrix(t(results@estimates), ncol = 1)
   data_cc <- data_yXZ[data_yXZ$D == 1, , drop = FALSE]
   X_cc    <- stats::model.matrix(object = model, data = data_cc)
 
@@ -132,6 +131,6 @@ estimate_beta_ipw <- function(data_yXZ, model, model_weights) {
 
   list(
     beta_est = t(beta_estimates),
-    se_est   = t(se_estimates)
+    se_est   = se_estimates
   )
 }

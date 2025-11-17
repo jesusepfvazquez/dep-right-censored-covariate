@@ -128,14 +128,13 @@ var_beta_ipw <- function(
 
   # pi(Y, W, Z) = P(C >= W | covariates) in Gumbel param
   pi_xz_func_b <- function(data., myalpha.) {
-    data_ <- data_
-    data_ <- data.
-    Wlog  <- log(data_$W)
+
+    Wlog  <- log(data.$W)
 
     gamma_vec <- myalpha.[1:(length(myalpha.) - 1)]
     shape_x   <- myalpha.[length(myalpha.)]
 
-    Xw       <- get_weight_design(data_)
+    Xw       <- get_weight_design(data.)
     linPred  <- as.numeric(Xw %*% gamma_vec)
 
     pgumbel(Wlog, shape = shape_x, scale = linPred)
@@ -143,17 +142,17 @@ var_beta_ipw <- function(
 
   # log-likelihood contribution for alpha (censoring model) for one or more rows
   alpha_logLik_b <- function(data., myalpha.) {
-    data_ <- data.
-    Wlog  <- log(data_$W)
+
+    Wlog  <- log(data.$W)
 
     gamma_vec <- myalpha.[1:(length(myalpha.) - 1)]
     shape_x   <- myalpha.[length(myalpha.)]
 
-    Xw       <- get_weight_design(data_)
+    Xw       <- get_weight_design(data.)
     linPred  <- as.numeric(Xw %*% gamma_vec)
 
-    val <- (1 - data_$D) * dgumbel(Wlog, shape_x, linPred) +
-      data_$D * pgumbel(Wlog, shape_x, linPred)
+    val <- (1 - data.$D) * dgumbel(Wlog, shape_x, linPred) +
+      data.$D * pgumbel(Wlog, shape_x, linPred)
 
     log(val)
   }
@@ -235,10 +234,12 @@ var_beta_ipw <- function(
   se_all  <- sqrt(diag(sand_var))
   se_beta <- se_all[1:p_beta]
 
-  list(
-    beta_est     = mybeta,
-    psi_est      = mypsi,
-    se_beta      = se_beta,
-    sandwich_var = sand_var
+  return(
+    list(
+      beta_est     = mybeta,
+      psi_est      = mypsi,
+      se_est      = se_beta,
+      sandwich_var = sand_var
+    )
   )
 }

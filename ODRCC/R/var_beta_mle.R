@@ -20,7 +20,7 @@
 #'   specified by \code{aw_var}), and any additional covariates appearing in
 #'   \code{model} and optionally \code{model_xz}.
 #' @param theta Numeric vector of parameter estimates, typically taken from
-#'   \code{estimate_beta_likelihood_optimx(...)[["beta_est"]]}. Must be ordered
+#'   \code{estimate_beta_mle(...)[["beta_est"]]}. Must be ordered
 #'   as \eqn{(\beta, \psi, \gamma_x, \text{shape}_x)}.
 #' @param model A \code{\link[stats]{formula}} specifying the outcome regression
 #'   model, e.g. \code{y ~ AW + Z1 + Z2}.
