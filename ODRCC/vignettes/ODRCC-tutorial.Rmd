@@ -8,8 +8,8 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-devtools::document()   # update documentation + NAMESPACE
-devtools::load_all()   # reload package into environment
+# devtools::document()   # update documentation + NAMESPACE
+# devtools::load_all()   # reload package into environment
 
 rm(list = ls())
 knitr::opts_chunk$set(
@@ -76,7 +76,7 @@ We will use the internal data-generating function `data_aft()` which simulates d
 ```{r simulate-data}
 set.seed(2025)
 
-n <- 300
+n <- 100
 dat <- data_aft(nSubjects = n)
 
 str(dat)
@@ -368,20 +368,3 @@ These summaries highlight:
 
 - bias of CC under outcome-dependent censoring,  
 - improved efficiency of MLE and AIPW/AIPW–Lambda estimators
-
----
-
-### How to use this
-
-1. Create the file:
-
-`vignettes/ODRCC-tutorial.Rmd`
-
-2. Paste everything from the YAML header down into that file.
-
-3. In R:
-
-# ```{r, eval = FALSE}
-# usethis::use_vignette("ODRCC-tutorial")  # if you haven't already
-# devtools::build_vignettes()
-# ```

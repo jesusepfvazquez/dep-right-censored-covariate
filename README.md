@@ -30,7 +30,7 @@ Additional tools included:
 ## Installation
 
 ```
-install.packages("devtools")          # if needed
+# install.packages("devtools")          # if needed
 devtools::install_github("jesusepfvazquez/ODRCC")
 ```
 ---
@@ -40,5 +40,6 @@ devtools::install_github("jesusepfvazquez/ODRCC")
 For a tutorial please check out the vignette.
 
 ```
+browseVignettes("ODRCC")
 vignette("ODRCC-tutorial")
 ```
