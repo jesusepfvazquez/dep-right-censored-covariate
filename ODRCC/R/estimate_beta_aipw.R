@@ -62,6 +62,7 @@
 #' @importFrom survival Surv survreg
 #' @importFrom geex m_estimate setup_root_control setup_deriv_control
 #' @export
+#'
 estimate_beta_aipw <- function(
     data_yXZ,
     model,
@@ -281,11 +282,12 @@ estimate_beta_aipw <- function(
   data_cc <- data_yXZ[data_yXZ$D == 1, , drop = FALSE]
   X_cc    <- stats::model.matrix(model, data_cc)
   psi_hat <- sqrt(
-    sum((data_cc$y - as.numeric(X_cc %*% beta_hat))^2 / nrow(data_cc)
-    )
+    sum((data_cc$y - as.numeric(X_cc %*% beta_hat))^2 / nrow(data_cc))
+  )
 
-    list(
-      beta_est = matrix(beta_hat, nrow = 1),
-      psi_est  = psi_hat
-    )
+  # return
+  list(
+    beta_est = matrix(beta_hat, nrow = 1),
+    psi_est  = psi_hat
+  )
 }
