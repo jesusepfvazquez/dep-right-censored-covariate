@@ -1,1 +1,1 @@
-# dep-right-censored-covariate
+## Outcome dependent right-censored covariate
