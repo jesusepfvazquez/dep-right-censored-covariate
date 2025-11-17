@@ -1,5 +1,6 @@
 ---
-title: "Robust Estimation with Outcome-Dependent Right-Censored Covariates"
+title: ODRCC Tutorial
+subtitle: "Robust Estimation with Outcome-Dependent Right-Censored Covariates"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ODRCC Tutorial}

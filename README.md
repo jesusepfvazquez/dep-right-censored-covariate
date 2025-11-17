@@ -30,8 +30,17 @@ Additional tools included:
 ## Installation
 
 ```
-# install.packages("devtools")          # if needed
-devtools::install_github("jesusepfvazquez/dep-right-censored-covariate", subdir = "ODRCC")
+# install dependency (if needed)
+install.packages("geex")
+install.packages(c("tictoc", "cubature", "numDeriv", "survival", "dplyr", "optimx"))
+
+# install.packages("devtools")  # if needed
+devtools::install_github(
+  "jesusepfvazquez/dep-right-censored-covariate",
+  subdir = "ODRCC",
+  dependencies = TRUE,
+  build_vignettes = TRUE
+)
 ```
 ---
 
@@ -40,5 +49,9 @@ devtools::install_github("jesusepfvazquez/dep-right-censored-covariate", subdir 
 For a tutorial please check out the vignette.
 
 ```
+# option 1
+browseVignettes("ODRCC") # pick "ODRCC-tutorial"
+
+# Or try 
 vignette("ODRCC-tutorial")
 ```
