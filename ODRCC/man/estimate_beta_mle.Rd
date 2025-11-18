@@ -4,7 +4,14 @@
 \alias{estimate_beta_mle}
 \title{Likelihood-based estimator via optimx for general AW + Z model}
 \usage{
-estimate_beta_mle(data_yXZ, model, aw_var = "AW", model_xz = NULL, trace = 0)
+estimate_beta_mle(
+  data_yXZ,
+  model,
+  aw_var = "AW",
+  model_weights,
+  model_xz = NULL,
+  trace = 0
+)
 }
 \arguments{
 \item{data_yXZ}{A data frame containing at least the outcome \code{y}, the
@@ -20,6 +27,11 @@ model, e.g. \code{y ~ AW + Z1 + Z2}.}
 is defined as \code{A - X} (default is \code{"AW"}). This variable must
 appear on the right-hand side of \code{model} and as a column in
 \code{data_yXZ}.}
+
+\item{model_weights}{A right-hand-side formula specifying the variables in
+the censoring model, e.g. \code{~ y + Z}. This will be expanded to
+\code{Surv(W, 1 - D) ~ y + Z} internally. This is needed so that we can compute
+an initial ``good" estimate for our regression parameters using the IPW estimator.}
 
 \item{model_xz}{Optional \code{\link[stats]{formula}} specifying the AFT model
 for \code{X | Z}. If \code{NULL} (default), the model for \code{X | Z} is

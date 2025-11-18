@@ -8,10 +8,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-# devtools::document()   # update documentation + NAMESPACE
-# devtools::load_all()   # reload package into environment
+```{R, include = FALSE, eval = TRUE}
+devtools::document()   # update documentation + NAMESPACE
+devtools::load_all()   # reload package into environment
+```
 
+```{r setup, include = FALSE}
 rm(list = ls())
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -77,7 +79,7 @@ We will use the internal data-generating function `data_aft()` which simulates d
 ```{r simulate-data}
 set.seed(2025)
 
-n <- 100
+n <- 300
 dat <- data_aft(nSubjects = n)
 
 str(dat)
@@ -211,6 +213,7 @@ est_mle = estimate_beta_mle(
     data_yXZ = dat,
     model = model,
     aw_var   = "AW",
+    model_weights = model_weights,
     model_xz = model_xz,
     trace = 0 # Set to 0 if no trace wanted, 1 otherwise
 )
@@ -275,10 +278,6 @@ tic("AIPW Estimator-Robust Sandwich Estimator:")
 var_aipw <- var_beta_aipw(
   data_yXZ = dat,
   theta  = theta_aipw,
-  model = model,
-  model_weights = model_weights,
-  model_xz      = model_xz,
-  aw_var        = "AW",
   lbound        = 0,
   ubound        = 50
 )
@@ -322,7 +321,7 @@ toc()
 
 ## 8. Comparing estimators
 
-Once all estimators have been run, we can collect and compare them:
+Once all estimators have been run, we can collect and compare them. Note that the oracle value is 1 across all. 
 
 ```{r compare-estimators, eval = TRUE}
 compare_beta <- rbind(
@@ -338,14 +337,14 @@ colnames(compare_beta) = c("beta0", "beta1", "beta2", "sigma")
 compare_beta
 ```
 
-You might also compare **standard errors**:
+The corresponding nuisance-adjusted **standard errors** are:
 
 ```{r compare-se, eval = TRUE}
 se_mat <- rbind(
   CC      = est_cc$se_est,
   IPW     = var_ipw$se_est,
   MLE     = var_mle$se_beta,
-  AIPW    = var_aipw$se_beta,
+  AIPW    = var_aipw$se_est,
   AIPW_Lambda  = var_aipw_lambda$se_est
 )
 
@@ -353,8 +352,3 @@ row.names(se_mat) = c("CC", "IPW", "MLE", "AIPW", "AIPW-Lambda")
 colnames(se_mat) = c("beta0", "beta1", "beta2")
 se_mat
 ```
-
-These summaries highlight:
-
-- bias of CC under outcome-dependent censoring,  
-- improved efficiency of MLE and AIPW/AIPW–Lambda estimators

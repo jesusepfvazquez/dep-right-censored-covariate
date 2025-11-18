@@ -28,7 +28,9 @@
 #' @importFrom survival Surv survreg
 #' @importFrom geex m_estimate setup_root_control setup_deriv_control
 #' @export
-estimate_beta_ipw <- function(data_yXZ, model, model_weights) {
+estimate_beta_ipw <- function(data_yXZ,
+                              model,
+                              model_weights) {
 
   #######################################################
   ## 1. Build censoring model formula: Surv(W, 1 - D) ~ ...

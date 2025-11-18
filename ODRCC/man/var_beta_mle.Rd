@@ -4,7 +4,7 @@
 \alias{var_beta_mle}
 \title{Sandwich variance estimator for likelihood-based estimator}
 \usage{
-var_beta_mle(data_yXZ, theta, model, aw_var = "AW", model_xz = NULL)
+var_beta_mle(data_yXZ, theta, model, model_xz = NULL, aw_var = "AW")
 }
 \arguments{
 \item{data_yXZ}{A data frame containing at least the outcome \code{y}, the
@@ -20,11 +20,6 @@ as \eqn{(\beta, \psi, \gamma_x, \text{shape}_x)}.}
 \item{model}{A \code{\link[stats]{formula}} specifying the outcome regression
 model, e.g. \code{y ~ AW + Z1 + Z2}.}
 
-\item{aw_var}{Character string giving the name of the exposure covariate that
-is defined as \code{A - X} (default is \code{"AW"}). This variable must
-appear on the right-hand side of \code{model} and as a column in
-\code{data_yXZ}.}
-
 \item{model_xz}{Optional \code{\link[stats]{formula}} specifying the AFT model
 for \code{X | Z}. If \code{NULL} (default), the model for \code{X | Z} is
 taken to be Weibull with log-mean linear in \code{(1, Z1, ..., Zp)}, where
@@ -33,6 +28,11 @@ taken to be Weibull with log-mean linear in \code{(1, Z1, ..., Zp)}, where
 either a right-hand-side formula (e.g. \code{~ Z1 + Z2}) or a full Surv
 formula (e.g. \code{Surv(W, D) ~ Z1 + Z2}); in both cases, only the RHS is
 used here to construct the design for \code{X | Z}.}
+
+\item{aw_var}{Character string giving the name of the exposure covariate that
+is defined as \code{A - X} (default is \code{"AW"}). This variable must
+appear on the right-hand side of \code{model} and as a column in
+\code{data_yXZ}.}
 }
 \value{
 A list with components

@@ -81,7 +81,7 @@ estimate_beta_aipw_lambda <- function(
     rhs_w        <- deparse(model_weights[[2]])
     cens_formula <- stats::as.formula(paste("Surv(W, 1 - D) ~", rhs_w))
   } else {
-    rhs_w        <- deparse(model_weights[[3]])
+    rhs_w        <- deparse(model_weights)
     cens_formula <- stats::as.formula(paste("Surv(W, 1 - D) ~", rhs_w))
   }
 
@@ -91,9 +91,8 @@ estimate_beta_aipw_lambda <- function(
     dist    = "weibull"
   )
 
-  shape.c <- 1 / wr$scale
-
   # meanCYZ: on original AFT scale, used in augmentation
+  shape.c <- 1 / wr$scale
   data_yXZ$meanCYZ <- exp(wr$linear.predictors)
 
   # IPW weights: S_C(W | covariates) under Weibull(AFT)
@@ -103,10 +102,9 @@ estimate_beta_aipw_lambda <- function(
   ## ------------------------------------------------------
   ## 3. Initial estimates via IPW
   ## ------------------------------------------------------
-  D   <- data_yXZ$D
-  myp <- data_yXZ$myp
-
-  ipw_fit <- stats::lm(model, data = data_yXZ, weights = D / myp)
+  D = data_yXZ$D
+  myp = data_yXZ$D
+  ipw_fit <- stats::lm(model, data = data_yXZ, weights = D/myp)
   g       <- stats::coef(ipw_fit)  # (beta0, beta1, beta2)
   psi     <- summary(ipw_fit)$sigma
 
@@ -129,10 +127,13 @@ estimate_beta_aipw_lambda <- function(
       myp_i <- data_row$myp
 
       ## complete-case score
-      CCscore <- function() {
-        mu <- as.numeric(X %*% theta_loc)
-        e  <- Y - mu
-        as.numeric((e / psi^2) * X)  # length 3
+      CCscore <- function(){
+        # useful quantities
+        mu <- X %*% theta_loc
+        e = Y - mu
+        # score equations for betas
+        dotbeta = (e/psi^2)%*%X
+        return(c(dotbeta))
       }
 
       ## closed-form augmentation psi_hat_i(theta_loc)
@@ -145,18 +146,12 @@ estimate_beta_aipw_lambda <- function(
         mu_star  <- -b / (2 * a)
         sd2_star <- (sdXZ^2 * psi^2) / (psi^2 + theta_loc[2]^2 * sdXZ^2)
 
-        # beta0
-        beta0_star <- (theta_loc[2] * mu_star + e_star) / psi^2
-
-        # beta1 (AW coeff)
-        beta1_star <- (
-          -theta_loc[2] * (sd2_star + mu_star^2) +
-            mu_star * (W[2] * theta_loc[2] - e_star) +
-            W[2] * e_star
-        ) / psi^2
-
-        # beta2 (Z coeff)
-        beta2_star <- W[3] * beta0_star
+        ### beta0
+        beta0_star = (theta_loc[2]*mu_star + e_star)/psi^2
+        ### beta1
+        beta1_star = (-theta_loc[2]*(sd2_star+mu_star^2) + mu_star*(W[2]*theta_loc[2] - e_star) + W[2]*e_star)/psi^2
+        ### beta2
+        beta2_star = W[3]*beta0_star
 
         c(beta0_star, beta1_star, beta2_star)
       }
@@ -218,21 +213,18 @@ estimate_beta_aipw_lambda <- function(
         mu_star  <- -b / (2 * a)
         sd2_star <- (sdXZ^2 * psi^2) / (psi^2 + theta[2]^2 * sdXZ^2)
 
-        beta0_star <- (theta[2] * mu_star + e_star) / psi^2
-
-        beta1_star <- (
-          -theta[2] * (sd2_star + mu_star^2) +
-            mu_star * (W[, 2] * theta[2] - e_star) +
-            W[, 2] * e_star
-        ) / psi^2
-
-        beta2_star <- W[, 3] * beta0_star
+        ### beta0
+        beta0_star = (theta[2]*mu_star + e_star)/psi^2
+        ### beta1
+        beta1_star = (-theta[2]*(sd2_star+mu_star^2) + mu_star*(W[2]*theta[2] - e_star) + W[2]*e_star)/psi^2
+        ### beta2
+        beta2_star = W[3]*beta0_star
 
         c(beta0_star, beta1_star, beta2_star)
       }
 
       term1 <- (D / myp) * CCscore()
-      term2 <- (1 - D / myp) * as.numeric(Lambda %*% psi_hat_i())
+      term2 <- (1 - D / myp) * Lambda %*% psi_hat_i()
       term1 + term2
     }
   }
@@ -263,8 +255,7 @@ estimate_beta_aipw_lambda <- function(
   se_mat <- matrix(se_hat, nrow = 1)
   beta_mat <- c(beta_hat, psi_hat)
 
-  return(list(
+  list(
     beta_est = beta_mat,
     se_est   = se_mat)
-  )
 }

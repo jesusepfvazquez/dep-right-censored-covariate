@@ -24,10 +24,6 @@
 #'   as \eqn{(\beta, \psi, \gamma_x, \text{shape}_x)}.
 #' @param model A \code{\link[stats]{formula}} specifying the outcome regression
 #'   model, e.g. \code{y ~ AW + Z1 + Z2}.
-#' @param aw_var Character string giving the name of the exposure covariate that
-#'   is defined as \code{A - X} (default is \code{"AW"}). This variable must
-#'   appear on the right-hand side of \code{model} and as a column in
-#'   \code{data_yXZ}.
 #' @param model_xz Optional \code{\link[stats]{formula}} specifying the AFT model
 #'   for \code{X | Z}. If \code{NULL} (default), the model for \code{X | Z} is
 #'   taken to be Weibull with log-mean linear in \code{(1, Z1, ..., Zp)}, where
@@ -36,6 +32,10 @@
 #'   either a right-hand-side formula (e.g. \code{~ Z1 + Z2}) or a full Surv
 #'   formula (e.g. \code{Surv(W, D) ~ Z1 + Z2}); in both cases, only the RHS is
 #'   used here to construct the design for \code{X | Z}.
+#' @param aw_var Character string giving the name of the exposure covariate that
+#'   is defined as \code{A - X} (default is \code{"AW"}). This variable must
+#'   appear on the right-hand side of \code{model} and as a column in
+#'   \code{data_yXZ}.
 #'
 #' @return A list with components
 #' \describe{
@@ -53,8 +53,8 @@ var_beta_mle <- function(
     data_yXZ,
     theta,
     model,
-    aw_var   = "AW",
-    model_xz = NULL
+    model_xz = NULL,
+    aw_var   = "AW"
 ) {
 
   # basic checks
@@ -256,7 +256,6 @@ var_beta_mle <- function(
     Reduce("+", parts)
   }
   A_mat <- calculate_A()
-
   A_inv <- solve(A_mat)
 
   sand_var <- A_inv %*% B_mat %*% t(A_inv)

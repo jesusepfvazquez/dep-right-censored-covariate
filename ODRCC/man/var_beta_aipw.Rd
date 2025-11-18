@@ -4,16 +4,7 @@
 \alias{var_beta_aipw}
 \title{Sandwich variance estimator for the AIPW estimator}
 \usage{
-var_beta_aipw(
-  data_yXZ = dat,
-  theta = theta_aipw,
-  model = model,
-  model_weights = model_weights,
-  model_xz = model_xz,
-  aw_var = "AW",
-  lbound = 0,
-  ubound = 50
-)
+var_beta_aipw(data_yXZ, theta, lbound = 0, ubound = 50)
 }
 \arguments{
 \item{data_yXZ}{Data frame containing at least:
@@ -31,21 +22,6 @@ where \code{beta} has length equal to the number of columns in
 \code{model.matrix(model, data_yXZ)} and \code{psi} is the residual
 standard deviation.}
 
-\item{model}{\code{\link[stats]{formula}} for the outcome, e.g.
-\code{y ~ AW + Z} or \code{y ~ AW + Z1 + Z2}.}
-
-\item{model_weights}{\code{\link[stats]{formula}} specifying the censoring
-model for \code{C | (Y, Z, ...)}. Typically a RHS-only formula such as
-\code{~ y + Z}, which is internally expanded to
-\code{Surv(W, 1 - D) ~ y + Z}.}
-
-\item{model_xz}{\code{\link[stats]{formula}} for the covariate structure
-of \code{X | Z}, typically RHS-only such as \code{~ Z}. Only the RHS is
-used.}
-
-\item{aw_var}{Character, name of the exposure covariate in \code{model} that
-equals \code{A - X} (default \code{"AW"}).}
-
 \item{lbound, ubound}{Numeric lower and upper bounds for the numerical
 integration over \code{X} in the augmentation term (defaults: 0, 50).}
 }
@@ -55,7 +31,6 @@ A list with components
 \item{beta_est}{Estimated regression coefficients \eqn{\beta}.}
 \item{psi_est}{Estimated residual standard deviation \eqn{\psi}.}
 \item{se_beta}{Sandwich standard errors for \eqn{\beta}.}
-\item{sandwich_var}{Full sandwich variance matrix for \eqn{\beta}.}
 }
 }
 \description{

@@ -238,8 +238,8 @@ var_beta_ipw <- function(
     list(
       beta_est     = mybeta,
       psi_est      = mypsi,
-      se_est      = se_beta,
-      sandwich_var = sand_var
+      se_est      = se_beta
+      # sandwich_var = sand_var
     )
   )
 }

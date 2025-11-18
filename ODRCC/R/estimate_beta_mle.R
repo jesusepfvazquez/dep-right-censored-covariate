@@ -19,6 +19,10 @@
 #'   is defined as \code{A - X} (default is \code{"AW"}). This variable must
 #'   appear on the right-hand side of \code{model} and as a column in
 #'   \code{data_yXZ}.
+#' @param model_weights A right-hand-side formula specifying the variables in
+#'   the censoring model, e.g. \code{~ y + Z}. This will be expanded to
+#'   \code{Surv(W, 1 - D) ~ y + Z} internally. This is needed so that we can compute
+#'   an initial ``good" estimate for our regression parameters using the IPW estimator.
 #' @param model_xz Optional \code{\link[stats]{formula}} specifying the AFT model
 #'   for \code{X | Z}. If \code{NULL} (default), the model for \code{X | Z} is
 #'   taken to be Weibull with log-mean linear in \code{(1, Z1, ..., Zp)}, where
@@ -48,6 +52,7 @@ estimate_beta_mle <- function(
     data_yXZ,
     model,
     aw_var   = "AW",
+    model_weights,
     model_xz = NULL,
     trace = 0
 ) {
@@ -75,7 +80,50 @@ estimate_beta_mle <- function(
   # add subject ID
   data_yXZ$b <- seq_len(nrow(data_yXZ))
 
-  ######## X | Z via Weibull AFT (for starting values) ########
+  #######################################################
+  ## 1. Build censoring model formula: Surv(W, 1 - D) ~ ...
+  #######################################################
+  if (!inherits(model_weights, "formula")) {
+    stop("'model_weights' must be a formula, e.g. ~ y + Z.")
+  }
+
+  # model_weights is like ~ y + Z; extract RHS
+  rhs <- deparse(model_weights[[2]])
+
+  cens_formula <- stats::as.formula(
+    paste("Surv(W, 1 - D) ~", rhs)
+  )
+
+  if (!all(c("W", "D") %in% names(data_yXZ))) {
+    stop("data_yXZ must contain columns 'W' and 'D'.")
+  }
+
+  #######################################################
+  ## 2. Fit Weibull AFT model for C | (Y, Z, ...)
+  #######################################################
+  wr <- survival::survreg(
+    formula = cens_formula,
+    data    = data_yXZ,
+    dist    = "weibull"
+  )
+
+  # Linear predictor for each subject (scale on original survreg scale)
+  lp <- stats::predict(wr, newdata = data_yXZ)
+  # Shape parameter of Weibull in survreg parameterization
+  shape_gamma <- 1 / wr$scale
+
+  # Estimated survival probability at W: S_C(W | covariates)
+  data_yXZ$myp <- exp(-(data_yXZ$W / lp)^shape_gamma)
+
+  # Basic sanity check to avoid dividing by 0
+  if (any(data_yXZ$myp <= 0)) {
+    stop("Some estimated weights are non-positive. Check the censoring model.")
+  }
+
+  #############################################################
+  # 3. X | Z via Weibull AFT (for starting values)
+  #############################################################
+
   # Construct the Surv(W, D) ~ ... formula
   if (!is.null(model_xz)) {
 
@@ -117,10 +165,13 @@ estimate_beta_mle <- function(
   # Terms used in X|Z mean; will be used to build design rows
   xz_terms <- attr(wr$terms, "term.labels")  # may be character(0) if intercept-only
 
-  ######## Initial parameter estimates for outcome model ########
-  # Use complete-case (D == 1) regression for starting values
+  #############################################################
+  # 4. Obtain initial parameter estimates for outcome model
+  #############################################################
+
+  # Use IPW regression for starting values
   data_cc <- data_yXZ[data_yXZ$D == 1, , drop = FALSE]
-  mylmer  <- stats::lm(model, data = data_cc)
+  mylmer  <- stats::lm(model, data = data_cc, weights = 1/myp)
 
   g_beta <- stats::coef(mylmer)                   # length p_beta
   g_psi  <- log(summary(mylmer)$sigma)            # log(psi) as working scale

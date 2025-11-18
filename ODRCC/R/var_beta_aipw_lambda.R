@@ -33,325 +33,363 @@
 #' @importFrom numDeriv jacobian hessian
 #' @importFrom parallel mclapply
 #' @export
-var_beta_aipw_lambda <- function(data_yXZ,
-                                 mytheta) {
+var_beta_aipw_lambda <- function(data_yXZ, mytheta){
 
-  ## --- basic checks & unpack theta ---
-  if (length(mytheta) != 4L) {
-    stop("mytheta must be length 4: c(beta0, beta1, beta2, psi).")
-  }
-  mybeta <- mytheta[1:3]
-  mypsi  <- mytheta[4]
+  # mytheta = est32$beta_est
+  wr <- survreg(Surv(W, 1-D) ~ y + Z, data = data_yXZ, dist="w")
+  myalpha = c(coef(wr), wr$scale)
+  mybeta = mytheta[1:(length(mytheta)-1)]
+  mypsi = mytheta[length(mytheta)]
+  myxi = c(mybeta,myalpha)
 
-  # outcome model is hard-coded as y ~ AW + Z
-  model_outcome <- y ~ AW + Z
+  ######################################################
+  # Step 1: Calculate Lambda using the values for theta
+  sdXZ = var(data_yXZ$W[data_yXZ$D==1])^0.5
+  meanXZ = mean(data_yXZ$W[data_yXZ$D==1])
+  data_yXZ$myp = data_yXZ$myp_ywz
 
-  ## --- Step 0: fit censoring model C | (Y, Z) via Weibull AFT and obtain Pr(D=1) ---
-  wr <- survival::survreg(
-    Surv(W, 1 - D) ~ y + Z,
-    data = data_yXZ,
-    dist = "weibull"
-  )
-
-  # IPW weights: S_C(W | covariates) under Weibull(AFT)
-  shape.c <- 1 / wr$scale
-  lp_c  <- exp(wr$linear.predictors)  # scale parameter
-  data_yXZ$myp <- exp(-(data_yXZ$W / lp_c)^shape.c)
-
-  myalpha <- c(stats::coef(wr), wr$scale)  # length 4
-  myxi    <- c(mybeta, myalpha)
-
-  ## --- Step 1: Lambda-related preliminaries ---
-  sdXZ   <- sqrt(stats::var(data_yXZ$W[data_yXZ$D == 1]))
-  meanXZ <- mean(data_yXZ$W[data_yXZ$D == 1])
-
-  ## --- Step 2: helper functions (Gumbel representation of Weibull AFT) ---
-
-  dgumbel <- function(x, shape, scale) {
-    (1 / shape) * exp((x - scale) / shape) * exp(-exp((x - scale) / shape))
+  #####################################################
+  # Step 2: Define helper functions
+  dgumbel = function(x, shape, scale){
+    (1/shape)*exp((x-scale)/shape)*exp(-exp((x-scale)/shape))
   }
 
-  pgumbel <- function(x, shape, scale) {
-    exp(-exp((x - scale) / shape))
+  pgumbel = function(x, shape, scale){
+    exp(-exp((x-scale)/shape))
   }
 
-  pi_xz_func.b <- function(data. = data_yXZ, myalpha. = myalpha) {
-    data.$W <- log(data.$W)
-    gamma.x.vec <- myalpha.[1:3]
-    shape.x     <- myalpha.[4]
-    linPred_yz  <- cbind(1, data.$y, data.$Z) %*% gamma.x.vec
-    pgumbel(data.$W, shape = shape.x, scale = linPred_yz)
+  pi_xz_func.b = function(data. = data_yXZ, myalpha. = myalpha){
+    data.$W = log(data.$W)
+    gamma.x.vec = myalpha.[1:3]
+    shape.x = myalpha.[4]
+    linPred_yz = cbind(rep(1,nrow(data.)),data.$y, data.$Z)%*%gamma.x.vec
+    return(pgumbel(data.$W, shape=shape.x, scale = linPred_yz))
+  }
+  # pi_xz_func.b(dat[1,])
+
+  jacobian_pi.b = function(data){
+    myderiv = numDeriv::jacobian(function(x)
+      pi_xz_func.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
+    return(matrix(ncol=1, myderiv))
+  }
+  # jacobian_pi.b(dat[1,])
+
+  alpha.logLik.b = function(data.=data_yXZ, myalpha. = myalpha){
+    data.$W = log(data.$W)
+    gamma.x.vec = myalpha.[1:3]
+    shape.x = myalpha.[4]
+    linPred_yz = cbind(rep(1,nrow(data.)),data.$y, data.$Z)%*%gamma.x.vec
+
+    myreturn = (1-data.$D)*dgumbel(data.$W, shape=shape.x, scale = linPred_yz)+
+      data.$D*pgumbel(data.$W, shape=shape.x, scale = linPred_yz)
+
+    return(log(myreturn))
   }
 
-  jacobian_pi.b <- function(data) {
-    deriv <- numDeriv::jacobian(
-      function(x) pi_xz_func.b(data. = data, myalpha. = x),
-      x      = myalpha,
-      method = "Richardson"
-    )
-    matrix(deriv, ncol = 1)
+  alpha.jacobian.b = function(data){
+    myderiv = numDeriv::jacobian(function(x)
+      alpha.logLik.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
+    return(matrix(ncol=1, myderiv))
   }
+  # alpha.jacobian.b(data_yXZ[1,])
 
-  alpha.logLik.b <- function(data. = data_yXZ, myalpha. = myalpha) {
-    data.$W <- log(data.$W)
-    gamma.x.vec <- myalpha.[1:3]
-    shape.x     <- myalpha.[4]
-    linPred_yz  <- cbind(1, data.$y, data.$Z) %*% gamma.x.vec
-
-    val <- (1 - data.$D) * dgumbel(data.$W, shape = shape.x, scale = linPred_yz) +
-      data.$D * pgumbel(data.$W, shape = shape.x, scale = linPred_yz)
-    log(val)
+  alpha.hessian.b = function(data){
+    myderiv = numDeriv::hessian(function(x)
+      alpha.logLik.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
+    return(myderiv)
   }
+  # alpha.hessian.b(data_yXZ[1,])
 
-  alpha.jacobian.b <- function(data) {
-    deriv <- numDeriv::jacobian(
-      function(x) alpha.logLik.b(data. = data, myalpha. = x),
-      x      = myalpha,
-      method = "Richardson"
-    )
-    matrix(deriv, ncol = 1)
+  ## 1. The A_alpha matrix
+  calculate_A_alpha = function(){
+    # calculate the hessian matrix and return
+    part1= lapply(1:nrow(data_yXZ), function(x) alpha.hessian.b(data_yXZ[x,]))
+    part1 = Reduce("+", part1)/nrow(data_yXZ)
+    return(part1)
   }
+  my_A_alpha_inv = -solve(calculate_A_alpha())
 
-  alpha.hessian.b <- function(data) {
-    numDeriv::hessian(
-      function(x) alpha.logLik.b(data. = data, myalpha. = x),
-      x      = myalpha,
-      method = "Richardson"
-    )
-  }
+  ## 2. The A_ipw of theta
+  calculate_A_ipw = function(){
 
-  ## --- 1. A_alpha (Hessian of censoring params) ---
-  calculate_A_alpha <- function() {
-    parts <- lapply(seq_len(nrow(data_yXZ)), function(i) {
-      alpha.hessian.b(data_yXZ[i, , drop = FALSE])
-    })
-    Reduce("+", parts) / nrow(data_yXZ)
-  }
-  my_A_alpha_inv <- -solve(calculate_A_alpha())
+    theta = mybeta
+    psi = mypsi
 
-  ## --- 2. A_ipw for theta (beta) ---
-  calculate_A_ipw <- function() {
+    A_ipw.b = function(data) {
 
-    theta <- mybeta
-    psi   <- mypsi
-
-    A_ipw.b <- function(data) {
-      X <- stats::model.matrix(~ AW + Z, data = data)
-      Y <- stats::model.response(stats::model.frame(y ~ AW + Z, data = data))
+      # X <- model.matrix(object = ~ AW+Z+Z2+Z3, data = data)
+      # Y <- model.response(model.frame(formula = y~ AW+Z+Z2+Z3, data = data))
+      # D <- data$D
+      X <- model.matrix(object = ~ AW+Z, data = data)
+      Y <- model.response(model.frame(formula = y~ AW+Z, data = data))
       D <- data$D
 
-      IPWscore <- function(myalpha.) {
-        mu <- X %*% theta
-        e  <- Y - mu
-        dotbeta <- (e / psi^2) %*% X
-        myp <- pi_xz_func.b(data. = data, myalpha. = myalpha.)
-        matrix(dotbeta*c(D/myp), ncol = 1)
+      # calculate the IPW score equation
+      IPWscore <- function(myalpha.){
+        # useful quantities
+        mu = X %*% theta
+        e = Y - mu
+        # score equations for betas
+        dotbeta = (e/psi^2)%*%X
+        myp = pi_xz_func.b(data.=data, myalpha. = myalpha.)
+        myreturn = matrix(ncol=1, dotbeta*c(D/myp))
+        return(myreturn)
       }
 
-      numDeriv::jacobian(
-        function(x) IPWscore(myalpha. = x),
-        x      = myalpha,
-        method = "Richardson"
-      )
+      # calculate the partial derivative
+      myderiv = numDeriv::jacobian(function(x)
+        IPWscore(myalpha. = x), myalpha, method = "Richardson")
+      return(myderiv)
     }
 
-    parts <- lapply(seq_len(nrow(data_yXZ)), function(i) {
-      A_ipw.b(data_yXZ[i, , drop = FALSE])
-    })
-    Reduce("+", parts) / nrow(data_yXZ)
+    # calculate the hessian matrix and return
+    part1= lapply(1:nrow(data_yXZ), function(x) A_ipw.b(data_yXZ[x,]))
+    part1 = Reduce("+", part1)/nrow(data_yXZ)
+    return(part1)
   }
-  my_A_ipw <- calculate_A_ipw()
+  my_A_ipw = calculate_A_ipw()
 
-  ## --- 3. A_alpha_theta (cross term between alpha and augmentation) ---
-  calculate_A_alpha_theta <- function() {
+  ## 3. A_alpha_theta
+  calculate_A_alpha_theta = function(){
 
-    theta <- mybeta
-    psi   <- mypsi
+    theta = mybeta
+    psi = mypsi
 
-    phi_yz.b <- function(data.) {
-      W <- stats::model.matrix(y ~ A + Z, data = data.)
-      X <- stats::model.matrix(y ~ AW + Z, data = data.)
-      Y <- stats::model.response(stats::model.frame(y ~ AW + Z, data = data.))
+    # augmentation component
+    phi_yz.b = function(data.){
+
+      W <- model.matrix(object = y ~ A + Z, data = data.)
+      X <- model.matrix(object = y ~ AW + Z, data = data.)
+      Y <- model.response(model.frame(formula = y ~ AW + Z, data = data.))
       D <- data.$D
+      z <- data.$Z
 
-      psi_hat_i <- function() {
+      # need these for integration components
+      # meanXZ = data.$mymeanXZ
 
-        e_star <- Y - (W %*% theta)
-        a      <- -1 / (2 * sdXZ^2) - theta[2]^2 / (2 * psi^2)
-        b      <-  meanXZ / sdXZ^2 - theta[2] * e_star / psi^2
-        mu_star  <- -b / (2 * a)
-        sd2_star <- (sdXZ^2 * psi^2) / (psi^2 + theta[2]^2 * sdXZ^2)
+      #######################
+      # Augmented Component #
+      #######################
+      psi_hat_i <- function(){
 
-        beta0_star <- (theta[2] * mu_star + e_star) / psi^2
-        beta1_star <- (
-          -theta[2] * (sd2_star + mu_star^2) +
-            mu_star * (W[2] * theta[2] - e_star) +
-            W[2] * e_star
-        ) / psi^2
-        beta2_star <- W[3] * beta0_star
+        # values needed
+        e_star = Y - (W %*% theta)
+        a = - 1/(2*sdXZ^2) -theta[2]^2/(2*psi^2)
+        b = (meanXZ/sdXZ^2 -theta[2]*e_star/psi^2)
+        c = (-meanXZ^2/(2*sdXZ^2) - e_star^2/(2*psi^2))
+        mu_star = -b/(2*a)
+        sd2_star = (sdXZ^2*psi^2)/(psi^2 + theta[2]^2*sdXZ^2)
 
-        c(beta0_star, beta1_star, beta2_star)
+        # # denominator
+        # mydenom = exp(c-(b^2/(4*a)))/sqrt(2*pi*(psi^2+theta[3]^2*sdXZ^2))
+
+        ### beta0
+        beta0_star = (theta[2]*mu_star + e_star)/psi^2
+        ### beta1
+        beta1_star = (-theta[2]*(sd2_star+mu_star^2) + mu_star*(W[2]*theta[2] - e_star) + W[2]*e_star)/psi^2
+        ### beta2
+        beta2_star = W[3]*beta0_star
+
+        return(c(beta0_star, beta1_star, beta2_star)) #, beta3_star, beta4_star))
       }
 
-      psi_hat_i()
+      return(psi_hat_i())
     }
 
-    A_alpha_theta.b <- function(mydata) {
-      D   <- mydata$D
-      myp <- mydata$myp
-      matrix(D * phi_yz.b(mydata) / (myp^2), ncol = 1) %*%
-        t(alpha.jacobian.b(mydata))
+    # calculate the value for the ith observations
+    A_alpha_theta.b = function(mydata){
+      D = mydata$D
+      myp = mydata$myp
+      return(matrix(ncol=1, D*phi_yz.b(mydata)/(myp^2)) %*% t(alpha.jacobian.b(mydata)))
     }
 
-    parts <- lapply(seq_len(nrow(data_yXZ)), function(i) {
-      A_alpha_theta.b(data_yXZ[i, , drop = FALSE])
-    })
-    Reduce("+", parts) / nrow(data_yXZ)
+    part1= lapply(1:nrow(data_yXZ), function(x) A_alpha_theta.b(data_yXZ[x,]))
+    part1 = Reduce("+", part1) /nrow(data_yXZ)
+    return(part1)
   }
-  my_A_alpha_theta <- calculate_A_alpha_theta()
+  my_A_alpha_theta = calculate_A_alpha_theta()
 
-  ## --- 4. Lambda matrix (myA in your notation) ---
-  calculate_Lambda <- function() {
+  #####################################################
+  # Step 4: Calculate Lambda using the values for theta
 
-    theta <- mybeta
-    psi   <- mypsi
+  # score function for alpha
+  calculate_A = function(){
 
-    calculate_A.b <- function(data, part1 = TRUE) {
+    theta = mybeta
+    psi = mypsi
 
-      W <- stats::model.matrix(~ A + Z, data = data)
-      X <- stats::model.matrix(y ~ AW + Z, data = data)
-      Y <- stats::model.response(stats::model.frame(y ~ AW + Z, data = data))
+    ## calculate the bth component
+    calculate_A.b = function(data, part1 = TRUE){
+
+      # data = data_mvn() %>% subset(b==2)
+      # theta = c(1,2,3)
+      # W <- model.matrix(object = ~ A + Z + Z2 + Z3, data = data)
+      # X <- model.matrix(object = y ~ AW + Z + Z2 + Z3, data = data)
+      # Y <- model.response(model.frame(formula = y ~ AW + Z + Z2 + Z3, data = data))
+      W <- model.matrix(object = ~ A + Z , data = data)
+      X <- model.matrix(object = y ~ AW + Z, data = data)
+      Y <- model.response(model.frame(formula = y ~ AW + Z, data = data))
       D <- data$D
       myp <- data$myp
 
-      CCscore <- function() {
+      #################
+      # 1st Component #
+      #################
+      CCscore <- function(){
+        # useful quantities
         mu <- X %*% theta
-        e  <- Y - mu
-        as.numeric(c(e / psi^2) * X)
+        e = Y - mu
+        # score equations for betas
+        dotbeta = (e/psi^2)%*%X
+        return(c(dotbeta))
       }
 
-      psi_hat_i <- function() {
+      #######################
+      # Augmented Component #
+      #######################
+      psi_hat_i <- function(){
 
-        e_star <- Y - (W %*% theta)
-        a      <- -1 / (2 * sdXZ^2) - theta[2]^2 / (2 * psi^2)
-        b      <-  meanXZ / sdXZ^2 - theta[2] * e_star / psi^2
-        mu_star  <- -b / (2 * a)
-        sd2_star <- (sdXZ^2 * psi^2) / (psi^2 + theta[2]^2 * sdXZ^2)
+        # values needed
+        e_star = Y - (W %*% theta)
+        a = - 1/(2*sdXZ^2) -theta[2]^2/(2*psi^2)
+        b = (meanXZ/sdXZ^2 -theta[2]*e_star/psi^2)
+        c = (-meanXZ^2/(2*sdXZ^2) - e_star^2/(2*psi^2))
+        mu_star = -b/(2*a)
+        sd2_star = (sdXZ^2*psi^2)/(psi^2 + theta[2]^2*sdXZ^2)
 
-        beta0_star <- (theta[2] * mu_star + e_star) / psi^2
-        beta1_star <- (
-          -theta[2] * (sd2_star + mu_star^2) +
-            mu_star * (W[2] * theta[2] - e_star) +
-            W[2] * e_star
-        ) / psi^2
-        beta2_star <- W[3] * beta0_star
+        ### beta0
+        beta0_star = (theta[2]*mu_star + e_star)/psi^2
+        ### beta1
+        beta1_star = (-theta[2]*(sd2_star+mu_star^2) + mu_star*(W[2]*theta[2] - e_star) + W[2]*e_star)/psi^2
+        ### beta2
+        beta2_star = W[3]*beta0_star
+        # ### beta3
+        # beta3_star = W[4]*beta0_star
+        # ### beta4
+        # beta4_star = W[5]*beta0_star
 
-        c(beta0_star, beta1_star, beta2_star)
+        return(c(beta0_star, beta1_star, beta2_star)) #, beta3_star, beta4_star))
       }
 
-      if (part1) {
-        # part1: E[ (D/p) * CCscore * { (1 - D/p) psi_hat_i + A_alpha_theta A_alpha_inv alpha' }^T ]
-        v2 <- (1 - D / myp) * psi_hat_i() +
-          my_A_alpha_theta %*% my_A_alpha_inv %*% alpha.jacobian.b(data)
-        v1 <- matrix(D * CCscore() / myp, ncol = 1)
-        v1 %*% t(v2)
-      } else {
-        # part2: E[ { (1 - D/p) psi_hat_i + A_alpha_theta A_alpha_inv alpha' }^{\otimes 2} ]
-        v <- (1 - D / myp) * psi_hat_i() +
-          my_A_alpha_theta %*% my_A_alpha_inv %*% alpha.jacobian.b(data)
-        vv <- matrix(v, ncol = 1)
-        vv %*% t(vv)
+      # print(theta)
+      if(part1 == TRUE){
+        # myreturn = matrix(ncol = 1,D*CCscore()/myp) %*% t( matrix(ncol=1, (1-D/myp)*psi_hat_i())) +
+        #   my_A_ipw%*%my_A_alpha_inv%*%jacobian.b(data) %*% t(matrix(ncol=1, (1-D/myp)*psi_hat_i()) + my_A_alpha_theta%*%my_A_alpha_inv%*%jacobian.b(data))
+        myreturn = matrix(ncol=1, (1-D/myp)*psi_hat_i()) + my_A_alpha_theta%*%my_A_alpha_inv%*%alpha.jacobian.b(data)
+        myreturn = (matrix(ncol = 1,D*CCscore()/myp) + my_A_ipw%*%my_A_alpha_inv%*%alpha.jacobian.b(data)) %*% t(myreturn)
+        return(myreturn)
+      }
+      if(part1 == FALSE){
+        myreturn = matrix(ncol=1, (1-D/myp)*psi_hat_i()) + my_A_alpha_theta%*%my_A_alpha_inv%*%alpha.jacobian.b(data)
+        myreturn = myreturn%*%t(myreturn)
       }
     }
 
-    part1 <- lapply(seq_len(nrow(data_yXZ)), function(i) {
-      calculate_A.b(data_yXZ[i, , drop = FALSE], part1 = TRUE)
-    })
-    part1 <- Reduce("+", part1) / nrow(data_yXZ)
+    # estimate first part of A matrix
+    part1 = lapply(1:nrow(data_yXZ), function(x) calculate_A.b(data_yXZ[x,]))
+    part1 = Reduce("+", part1)/nrow(data_yXZ)
 
-    part2 <- lapply(seq_len(nrow(data_yXZ)), function(i) {
-      calculate_A.b(data_yXZ[i, , drop = FALSE], part1 = FALSE)
-    })
-    part2 <- Reduce("+", part2) / nrow(data_yXZ)
+    part2= lapply(1:nrow(data_yXZ), function(x) calculate_A.b(data_yXZ[x,], part1=FALSE))
+    part2 = Reduce("+", part2)/nrow(data_yXZ)
 
-    -part1 %*% solve(part2)
+    returnA = -part1%*%solve(part2)
+    return(returnA)
   }
+  myA = calculate_A()
+  toc()
 
-  Lambda <- calculate_Lambda()
+  #####################################################
+  # Step 6: Calculate the A and the B matrices
+  aipw.lambda.b <- function(theta, data.b){
 
-  ## --- 5. Influence function of AIPW-lambda estimator ---
-  aipw.lambda.b <- function(theta, data.b) {
-
-    W <- stats::model.matrix(~ A + Z, data = data.b)
-    X <- stats::model.matrix(y ~ AW + Z, data = data.b)
-    Y <- stats::model.response(stats::model.frame(y ~ AW + Z, data = data.b))
+    # W <- model.matrix(object = ~ A + Z + Z2 + Z3, data = data.b)
+    # X <- model.matrix(object = y ~ AW + Z + Z2 + Z3, data = data.b)
+    # Y <- model.response(model.frame(formula = y ~ AW + Z + Z2 + Z3, data = data.b))
+    W <- model.matrix(object = ~ A + Z , data = data.b)
+    X <- model.matrix(object = y ~ AW + Z, data = data.b)
+    Y <- model.response(model.frame(formula = y ~ AW + Z, data = data.b))
     D <- data.b$D
     myp <- data.b$myp
-    psi <- mypsi
+    psi = mypsi
 
-    CCscore <- function() {
+    #################
+    # 1st Component #
+    #################
+    CCscore <- function(){
+      # useful quantities
       mu <- X %*% theta
-      e  <- Y - mu
-      as.numeric( c(e / psi^2) * X)
+      e = Y - mu
+      # score equations for betas
+      dotbeta = (e/psi^2)%*%X
+      return(c(dotbeta))
     }
 
-    psi_hat_i <- function() {
-      e_star <- Y - (W %*% theta)
-      a      <- -1 / (2 * sdXZ^2) - theta[2]^2 / (2 * psi^2)
-      b      <-  meanXZ / sdXZ^2 - theta[2] * e_star / psi^2
-      mu_star  <- -b / (2 * a)
-      sd2_star <- (sdXZ^2 * psi^2) / (psi^2 + theta[2]^2 * sdXZ^2)
+    #######################
+    # Augmented Component #
+    #######################
 
-      beta0_star <- (theta[2] * mu_star + e_star) / psi^2
-      beta1_star <- (
-        -theta[2] * (sd2_star + mu_star^2) +
-          mu_star * (W[2] * theta[2] - e_star) +
-          W[2] * e_star
-      ) / psi^2
-      beta2_star <- W[3] * beta0_star
+    psi_hat_i <- function(){
 
-      c(beta0_star, beta1_star, beta2_star)
+      # values needed
+      e_star = Y - (W %*% theta)
+      a = - 1/(2*sdXZ^2) -theta[2]^2/(2*psi^2)
+      b = (meanXZ/sdXZ^2 -theta[2]*e_star/psi^2)
+      c = (-meanXZ^2/(2*sdXZ^2) - e_star^2/(2*psi^2))
+      mu_star = -b/(2*a)
+      sd2_star = (sdXZ^2*psi^2)/(psi^2 + theta[2]^2*sdXZ^2)
+
+      # # denominator
+      # mydenom = exp(c-(b^2/(4*a)))/sqrt(2*pi*(psi^2+theta[3]^2*sdXZ^2))
+
+      ### beta0
+      beta0_star = (theta[2]*mu_star + e_star)/psi^2
+      ### beta1
+      beta1_star = (-theta[2]*(sd2_star+mu_star^2) + mu_star*(W[2]*theta[2] - e_star) + W[2]*e_star)/psi^2
+      ### beta2
+      beta2_star = W[3]*beta0_star
+      ### beta3
+      beta3_star = W[4]*beta0_star
+      ### beta4
+      beta4_star = W[5]*beta0_star
+
+      return(c(beta0_star, beta1_star, beta2_star)) #, beta3_star, beta4_star))
     }
 
-    CC_term <- CCscore() * (D / myp)
-    aug_core <- Lambda %*% psi_hat_i()
-    alpha_adj <- (my_A_ipw + Lambda %*% my_A_alpha_theta) %*%
-      (my_A_alpha_inv %*% alpha.jacobian.b(data.b))
+    # print(theta)
+    AIPW_est = CCscore()*D/myp + (1 - D/myp)* myA %*% psi_hat_i() +
+      (my_A_ipw +  myA %*% my_A_alpha_theta)%*%(my_A_alpha_inv%*%alpha.jacobian.b(data.b))
+    # print(ACC_est)
+    return(AIPW_est)
 
-    CC_term + (1 - D / myp) * aug_core + alpha_adj
   }
 
-  ## --- 6. Sandwich A and B for beta ---
-  calculate.B <- function() {
-    parts <- lapply(seq_len(nrow(data_yXZ)), function(i) {
-      s_i <- aipw.lambda.b(theta = mybeta, data.b = data_yXZ[i, , drop = FALSE])
-      s_i %*% t(s_i)
-    })
-    Reduce("+", parts)
-  }
-  myB <- calculate.B()
+  #####################################################
+  # Step 6: Calculate the A and the B matrices
 
-  calculate.A <- function() {
-    parts <- parallel::mclapply(
-      X = seq_len(nrow(data_yXZ)),
-      FUN = function(i) {
-        numDeriv::jacobian(
-          function(x) aipw.lambda.b(theta = x, data.b = data_yXZ[i, , drop = FALSE]),
-          x      = mybeta,
-          method = "Richardson"
-        )
-      }
+  calculate.B = function(){
+    part1 = lapply(1:nrow(data_yXZ), function(i){
+      dotalpha = aipw.lambda.b(theta = mybeta, data.b = data_yXZ[i,])
+      return(dotalpha %*% t(dotalpha))}
     )
-    Reduce("+", parts)
+    part1 = Reduce("+", part1)
+    return(part1)
   }
-  myA <- calculate.A()
-  myA.inv <- solve(myA)
+  myB = calculate.B()
 
-  sand.var <- myA.inv %*% myB %*% t(myA.inv)
-  se_beta  <- sqrt(diag(sand.var))
+  # A matrix
+  calculate.A = function(){
+    part1 = parallel::mclapply(1:nrow(data_yXZ), function(i)
+      dotalpha = numDeriv::jacobian(function(x)
+        aipw.lambda.b(theta = x, data.b = data_yXZ[i,]), mybeta, method = "Richardson")
+    )
+    part1 = Reduce("+", part1) #/nrow(data_yXZ)
+  }
+  myA = calculate.A()
+  myA.inv = solve(myA)
 
-  list(
-    beta_est = mytheta,
-    se_est   = se_beta
-  )
+  # calculate sandwich variance estimate
+  sand.var = myA.inv%*%myB%*%t(myA.inv)
+  sand.var = sqrt(diag(sand.var))
+  # return values
+  return(list(beta_est = mytheta, se_est = sand.var))
 }
