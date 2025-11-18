@@ -9,8 +9,8 @@ vignette: >
 ---
 
 ```{R, include = FALSE, eval = TRUE}
-devtools::document()   # update documentation + NAMESPACE
-devtools::load_all()   # reload package into environment
+# devtools::document()   # update documentation + NAMESPACE
+# devtools::load_all()   # reload package into environment
 ```
 
 ```{r setup, include = FALSE}
