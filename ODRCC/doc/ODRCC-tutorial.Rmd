@@ -1,0 +1,371 @@
+---
+title: ODRCC Tutorial
+subtitle: "Robust Estimation with Outcome-Dependent Right-Censored Covariates"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ODRCC Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+# devtools::document()   # update documentation + NAMESPACE
+# devtools::load_all()   # reload package into environment
+
+rm(list = ls())
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width  = 6,
+  fig.height = 4
+)
+set.seed(123)
+```
+
+## 1. Introduction
+
+The `ODRCC` package implements robust and efficient estimators for regression models when a key covariate is **right-censored in an outcome-dependent way**.  
+
+In many applications, we observe
+
+- a continuous outcome $Y$
+- fully observed covariates $Z$,
+- an auxiliary variable $A$ which represents age,
+- a covariate of interest $X$ that is **right-censored** by $C$,  
+  so we only observe
+  $$
+  W = \min(X, C), \quad D = I(X \le C).
+  $$
+
+A common modeling strategy is to work with the transformed covariate
+$$
+AW = A - X,
+$$
+and fit a regression of the form
+$$
+Y = \beta_0 + \beta_1 AW + \beta_2 Z + \epsilon,
+$$
+where $\epsilon$ is mean-zero noise.
+
+Naive complete-case analysis discards subjects with $D=0$, leading to:
+
+- loss of efficiency, and  
+- potential **bias** when censoring depends on the outcome (outcome-dependent censoring).
+
+`ODRCC` provides several estimators that remain consistent and can improve efficiency:
+
+- **IPW**: inverse probability weighting using a model for $C \mid (Y, Z)$ 
+- **MLE**: likelihood-based estimator using a model for $X \mid Z$
+- **AIPW**: augmented IPW estimator, combining IPW + augmentation  
+- **AIPW-$\Lambda$**: a closed-form augmentation variant based on a $\Lambda$-type adjustment
+
+This vignette walks through a typical analysis workflow with **simulated data**.
+
+---
+
+## 2. Load the package and simulate data
+
+```{r load-package}
+devtools::load_all(".")
+library(dplyr)
+library(tictoc) # to time the functions
+```
+
+We will use the internal data-generating function `data_aft()` which simulates data from an AFT-type model with outcome-dependent censoring of $X$.
+
+
+```{r simulate-data}
+set.seed(2025)
+
+n <- 100
+dat <- data_aft(nSubjects = n)
+
+str(dat)
+summary(dat$D)
+```
+In this simulated dataset:
+
+- `y` = outcome  
+- `Z` = covariate  
+- `A` = auxiliary variable  
+- `X` = true covariate (subject to censoring)  
+- `C` = censoring time  
+- `W` = min(X, C)  
+- `D` = I(X ≤ C)  
+- `AX` = A - X; representing time to event
+- `AW` = A - W; coarsened version of AX  
+- various weight variables (e.g., `myp_ywz`, `myp_ywz_oracle`, etc.)  
+
+For regression we'll use the working model  
+
+$$
+Y \sim AW + Z
+$$
+
+which in R is
+
+```{r model-formula}
+model <- y ~ AW + Z
+```
+
+---
+
+## 3. Complete-case (CC) estimator
+
+The **complete-case** estimator uses only subjects with $D=1$ (uncensored $X$), fitting a standard linear model via M-estimation:
+
+```{r cc-estimator}
+tic()
+est_cc <- estimate_beta_cc(dat, model = model)
+est_cc
+toc()
+```
+`estimate_beta_cc()` returns:
+
+- `beta_est`: a matrix with the regression coefficients and $\hat\psi$
+- `se_est`: the corresponding standard errors for $\beta$
+
+You can inspect them as:
+
+```{r cc-coefs}
+cc_beta <- est_cc$beta_est
+cc_se   <- est_cc$se_est
+
+cc_beta
+cc_se
+```
+
+---
+
+## 4. IPW estimator
+
+The **IPW** estimator uses weights based on the estimated probability that $X$ is observed, typically modeling
+
+$$
+f_{C \mid Y, Z}(w,y,z)
+$$
+
+with an AFT model. In the package version, the user supplies a formula for the **weighting model**, e.g. `~ y + Z`, and the function internally fits a Weibull AFT via `survreg()`.
+
+Here we specify an IPW estimator with an AFT-based weighting model:
+
+```{r ipw-estimator}
+# outcome model
+model <- y ~ AW + Z
+
+# weights model: C | Y, Z
+model_weights <- ~ y + Z
+
+tic("IPW Estimator:")
+est_ipw <- estimate_beta_ipw(
+  data_yXZ      = dat,
+  model         = model,
+  model_weights = model_weights
+)
+est_ipw
+toc()
+```
+Extract coefficients and standard errors:
+
+```{r ipw-coefs}
+ipw_beta <- est_ipw$beta_est
+ipw_se   <- est_ipw$se_est
+
+ipw_beta
+ipw_se
+```
+
+If you want the robust sandwich SEs from the dedicated variance function:
+
+```{r ipw-var, eval = TRUE}
+# Suppose est_ipw$beta_est is a 1 x p matrix including psi at the end
+theta_ipw <- as.numeric(est_ipw$beta_est)
+
+tic("IPW Estimator-Robust Sandwich Estimator:")
+var_ipw <- var_beta_ipw(
+  data_yXZ = dat,
+  theta  = theta_ipw,
+  model         = model,
+  model_weights = model_weights
+)
+var_ipw$se_est
+toc()
+```
+
+---
+
+## 5. Maximum Likelihood estimator (MLE) 
+
+The **MLE** approach uses a joint model, combining:
+
+- the outcome model $f_{Y \mid X, Z}$, and  
+- a model for $f_{X \mid Z}$ (Weibull AFT),
+
+and integrates over censored $X$.
+
+```{r mle-estimator, eval = TRUE}
+model_xz = as.formula("~Z")
+
+tic("MLE:")
+est_mle = estimate_beta_mle(
+    data_yXZ = dat,
+    model = model,
+    aw_var   = "AW",
+    model_xz = model_xz,
+    trace = 0 # Set to 0 if no trace wanted, 1 otherwise
+)
+est_mle
+toc()
+```
+
+The corresponding sandwich variance:
+
+```{r mle-var, eval = TRUE}
+theta_mle <- as.numeric(c(est_mle$beta_est,est_mle$gamma_est))
+
+tic("MLE-Robust Sandwich Estimator:")
+var_mle <- var_beta_mle(
+    data_yXZ = dat,
+    theta = theta_mle,
+    model = model,
+    aw_var   = "AW",
+    model_xz = model_xz
+)
+var_mle$se_beta
+toc()
+```
+
+---
+
+## 6. Augmented IPW (AIPW) estimator
+
+The **AIPW** estimator combines IPW with an augmentation term based on a model for $f_{X \mid Z}$, providing double-robustness-type behavior and improved efficiency.
+
+In the package version, you supply:
+
+- `model`: outcome model, e.g. `y ~ AW + Z`  
+- `model_weights`: censoring model for $f_{C | (Y, Z)}$ 
+- `gamma_x`: parameters of the $f_{X \mid Z}$ AFT model (coefficients + shape)  
+- `model_xz`: covariate structure for $X | Z$ (RHS-only formula, e.g. `~ Z`)
+
+In a typical workflow, you would:
+
+1. Fit a working model for $X | Z$ to obtain $\hat\gamma_x$
+2. Plug $\hat\gamma_x$into `estimate_beta_aipw()`.
+
+Here, suppose we have a known or estimated `gamma_x` from the simulation:
+
+```{r aipw-gamma-setup, eval = TRUE}
+model_xz <- ~ Z
+
+tic("AIPW:")
+est_aipw <- estimate_beta_aipw(
+  data_yXZ      = dat,
+  model         = model,
+  model_weights = model_weights,
+  model_xz      = model_xz,
+  aw_var        = "AW",
+  lbound        = 0,
+  ubound        = 50
+)
+est_aipw
+toc()
+```
+
+AIPW sandwich SEs:
+
+```{r aipw-var, eval = TRUE}
+# est_aipw$beta_est is 1 x p, est_aipw$psi_est is scalar
+theta_aipw <- c(as.numeric(est_aipw$beta_est))
+# theta_aipw <- c(as.numeric(est_ipw$beta_est))
+
+tic("AIPW Estimator-Robust Sandwich Estimator:")
+var_aipw <- var_beta_aipw(
+  data_yXZ = dat,
+  theta  = theta_aipw,
+  model = model,
+  model_weights = model_weights,
+  model_xz      = model_xz,
+  aw_var        = "AW",
+  lbound        = 0,
+  ubound        = 50
+)
+var_aipw$se_est
+toc()
+```
+
+Because the AIPW integrals can be numerically heavy, we keep these chunks as `eval = FALSE` in the vignette. Users can run them manually.
+
+---
+
+## 7. AIPW–Lambda estimator (closed-form augmentation)
+
+The **AIPW–Lambda** estimator uses an approximation to the augmentation term that admits a closed-form expression under specific modeling assumptions for $f_{X | Z}$. This provides a computationally cheaper alternative to full numerical AIPW.
+
+
+```{r lambda-estimator, eval = TRUE}
+tic("AIPW with Lambda Estimator:")
+est_aipw_lambda <- estimate_beta_aipw_lambda(
+    data_yXZ = dat,
+    model = model,
+    model_weights = model_weights,
+    aw_var  = "AW"
+) 
+est_aipw_lambda
+toc()
+```
+
+Variance via the dedicated robust sandwiich estimator function:
+
+```{r lambda-var, eval = TRUE}
+theta_aipw_lambda <- as.numeric(est_aipw_lambda$beta_est)
+
+tic("AIPW with Lambda Estimator-Robust Sandwich Estimator:")
+var_aipw_lambda <- var_beta_aipw_lambda(
+  data_yXZ = dat,
+  mytheta  = theta_aipw_lambda
+)
+var_aipw_lambda$se_est
+toc()
+```
+
+---
+
+## 8. Comparing estimators
+
+Once all estimators have been run, we can collect and compare them:
+
+```{r compare-estimators, eval = TRUE}
+compare_beta <- rbind(
+  CC      = est_cc$beta_est,
+  IPW     = est_ipw$beta_est,
+  MLE     = est_mle$beta_est,
+  AIPW    = est_aipw$beta_est,
+  AIPW_Lambda  = est_aipw_lambda$beta_est
+)
+
+row.names(compare_beta) = c("CC", "IPW", "MLE", "AIPW", "AIPW-Lambda")
+colnames(compare_beta) = c("beta0", "beta1", "beta2", "sigma")
+compare_beta
+```
+
+You might also compare **standard errors**:
+
+```{r compare-se, eval = TRUE}
+se_mat <- rbind(
+  CC      = est_cc$se_est,
+  IPW     = var_ipw$se_est,
+  MLE     = var_mle$se_beta,
+  AIPW    = var_aipw$se_beta,
+  AIPW_Lambda  = var_aipw_lambda$se_est
+)
+
+row.names(se_mat) = c("CC", "IPW", "MLE", "AIPW", "AIPW-Lambda")
+colnames(se_mat) = c("beta0", "beta1", "beta2")
+se_mat
+```
+
+These summaries highlight:
+
+- bias of CC under outcome-dependent censoring,  
+- improved efficiency of MLE and AIPW/AIPW–Lambda estimators

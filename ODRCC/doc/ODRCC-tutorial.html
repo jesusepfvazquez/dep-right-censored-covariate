@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>ODRCC Tutorial</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">ODRCC Tutorial</h1>
+<h3 class="subtitle">Robust Estimation with Outcome-Dependent
+Right-Censored Covariates</h3>
+
+
+
+<div id="introduction" class="section level2">
+<h2>1. Introduction</h2>
+<p>The <code>ODRCC</code> package implements robust and efficient
+estimators for regression models when a key covariate is
+<strong>right-censored in an outcome-dependent way</strong>.</p>
+<p>In many applications, we observe</p>
+<ul>
+<li>a continuous outcome <span class="math inline">\(Y\)</span></li>
+<li>fully observed covariates <span class="math inline">\(Z\)</span>,</li>
+<li>an auxiliary variable <span class="math inline">\(A\)</span> which
+represents age,</li>
+<li>a covariate of interest <span class="math inline">\(X\)</span> that
+is <strong>right-censored</strong> by <span class="math inline">\(C\)</span>,<br />
+so we only observe <span class="math display">\[
+W = \min(X, C), \quad D = I(X \le C).
+\]</span></li>
+</ul>
+<p>A common modeling strategy is to work with the transformed covariate
+<span class="math display">\[
+AW = A - X,
+\]</span> and fit a regression of the form <span class="math display">\[
+Y = \beta_0 + \beta_1 AW + \beta_2 Z + \epsilon,
+\]</span> where <span class="math inline">\(\epsilon\)</span> is
+mean-zero noise.</p>
+<p>Naive complete-case analysis discards subjects with <span class="math inline">\(D=0\)</span>, leading to:</p>
+<ul>
+<li>loss of efficiency, and<br />
+</li>
+<li>potential <strong>bias</strong> when censoring depends on the
+outcome (outcome-dependent censoring).</li>
+</ul>
+<p><code>ODRCC</code> provides several estimators that remain consistent
+and can improve efficiency:</p>
+<ul>
+<li><strong>IPW</strong>: inverse probability weighting using a model
+for <span class="math inline">\(C \mid (Y, Z)\)</span></li>
+<li><strong>MLE</strong>: likelihood-based estimator using a model for
+<span class="math inline">\(X \mid Z\)</span></li>
+<li><strong>AIPW</strong>: augmented IPW estimator, combining IPW +
+augmentation<br />
+</li>
+<li><strong>AIPW-<span class="math inline">\(\Lambda\)</span></strong>:
+a closed-form augmentation variant based on a <span class="math inline">\(\Lambda\)</span>-type adjustment</li>
+</ul>
+<p>This vignette walks through a typical analysis workflow with
+<strong>simulated data</strong>.</p>
+<hr />
+</div>
+<div id="load-the-package-and-simulate-data" class="section level2">
+<h2>2. Load the package and simulate data</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">load_all</span>(<span class="st">&quot;.&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; ℹ Loading ODRCC</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Warning: replacing previous import &#39;geex::coef&#39; by &#39;stats::coef&#39; when loading</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; &#39;ODRCC&#39;</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">library</span>(tictoc) <span class="co"># to time the functions</span></span></code></pre></div>
+<p>We will use the internal data-generating function
+<code>data_aft()</code> which simulates data from an AFT-type model with
+outcome-dependent censoring of <span class="math inline">\(X\)</span>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2025</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data_aft</span>(<span class="at">nSubjects =</span> n)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">str</span>(dat)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; &#39;data.frame&#39;:    100 obs. of  18 variables:</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;  $ y             : num  2.43 1.52 -7.16 4.83 -2.18 ...</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;  $ Z             : num  0.6208 0.0356 0.7732 1.2725 0.371 ...</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;  $ D             : num  0 1 1 1 1 0 0 0 0 0 ...</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;  $ A             : num  2.69 1.745 3.042 2.237 0.673 ...</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;  $ X             : num  2.569 1.863 12.516 0.571 3.746 ...</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;  $ AX            : num  0.122 -0.117 -9.474 1.666 -3.073 ...</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;  $ C             : num  0.121 3.17 65.307 2.922 267.089 ...</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;  $ W             : num  0.121 1.863 12.516 0.571 3.746 ...</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;  $ AW            : num  2.569 -0.117 -9.474 1.666 -3.073 ...</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;  $ meanCYZ       : num  1.098 1.295 143.841 0.459 9.751 ...</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;  $ meanXZ        : num  2.89 2.73 2.94 3.09 2.82 ...</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;  $ b             : int  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;  $ myp_uniform   : num  0.513 0.446 0.266 0.419 0.271 ...</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;  $ myp_ywz_oracle: num [1:100, 1] 0.717 0.301 0.745 0.328 0.538 ...</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt;  $ myp_ywz       : num  0.715 0.334 0.662 0.363 0.505 ...</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt;  $ meanXD0YZ     : num  1.79 2.4 13.01 1.09 4.55 ...</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt;  $ AX_yz         : num  0.902 -0.117 -9.474 1.666 -3.073 ...</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt;  $ AX_z          : num  -0.587 -0.117 -9.474 1.666 -3.073 ...</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="fu">summary</span>(dat<span class="sc">$</span>D)</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt;     0.0     0.0     0.0     0.4     1.0     1.0</span></span></code></pre></div>
+<p>In this simulated dataset:</p>
+<ul>
+<li><code>y</code> = outcome<br />
+</li>
+<li><code>Z</code> = covariate<br />
+</li>
+<li><code>A</code> = auxiliary variable<br />
+</li>
+<li><code>X</code> = true covariate (subject to censoring)<br />
+</li>
+<li><code>C</code> = censoring time<br />
+</li>
+<li><code>W</code> = min(X, C)<br />
+</li>
+<li><code>D</code> = I(X ≤ C)<br />
+</li>
+<li><code>AX</code> = A - X; representing time to event</li>
+<li><code>AW</code> = A - W; coarsened version of AX<br />
+</li>
+<li>various weight variables (e.g., <code>myp_ywz</code>,
+<code>myp_ywz_oracle</code>, etc.)</li>
+</ul>
+<p>For regression we’ll use the working model</p>
+<p><span class="math display">\[
+Y \sim AW + Z
+\]</span></p>
+<p>which in R is</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> y <span class="sc">~</span> AW <span class="sc">+</span> Z</span></code></pre></div>
+<hr />
+</div>
+<div id="complete-case-cc-estimator" class="section level2">
+<h2>3. Complete-case (CC) estimator</h2>
+<p>The <strong>complete-case</strong> estimator uses only subjects with
+<span class="math inline">\(D=1\)</span> (uncensored <span class="math inline">\(X\)</span>), fitting a standard linear model via
+M-estimation:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">tic</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>est_cc <span class="ot">&lt;-</span> <span class="fu">estimate_beta_cc</span>(dat, <span class="at">model =</span> model)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>est_cc</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; $beta_est</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;                                 psi_updated</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; [1,] 0.8771927 1.02975 1.123387    1.076252</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; $se_est</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1818254 0.04570095 0.1325296</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 0.129 sec elapsed</span></span></code></pre></div>
+<p><code>estimate_beta_cc()</code> returns:</p>
+<ul>
+<li><code>beta_est</code>: a matrix with the regression coefficients and
+<span class="math inline">\(\hat\psi\)</span></li>
+<li><code>se_est</code>: the corresponding standard errors for <span class="math inline">\(\beta\)</span></li>
+</ul>
+<p>You can inspect them as:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>cc_beta <span class="ot">&lt;-</span> est_cc<span class="sc">$</span>beta_est</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>cc_se   <span class="ot">&lt;-</span> est_cc<span class="sc">$</span>se_est</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>cc_beta</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;                                 psi_updated</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; [1,] 0.8771927 1.02975 1.123387    1.076252</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>cc_se</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1818254 0.04570095 0.1325296</span></span></code></pre></div>
+<hr />
+</div>
+<div id="ipw-estimator" class="section level2">
+<h2>4. IPW estimator</h2>
+<p>The <strong>IPW</strong> estimator uses weights based on the
+estimated probability that <span class="math inline">\(X\)</span> is
+observed, typically modeling</p>
+<p><span class="math display">\[
+f_{C \mid Y, Z}(w,y,z)
+\]</span></p>
+<p>with an AFT model. In the package version, the user supplies a
+formula for the <strong>weighting model</strong>,
+e.g. <code>~ y + Z</code>, and the function internally fits a Weibull
+AFT via <code>survreg()</code>.</p>
+<p>Here we specify an IPW estimator with an AFT-based weighting
+model:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># outcome model</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>model <span class="ot">&lt;-</span> y <span class="sc">~</span> AW <span class="sc">+</span> Z</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># weights model: C | Y, Z</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>model_weights <span class="ot">&lt;-</span> <span class="er">~</span> y <span class="sc">+</span> Z</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;IPW Estimator:&quot;</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>est_ipw <span class="ot">&lt;-</span> <span class="fu">estimate_beta_ipw</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">data_yXZ      =</span> dat,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">model         =</span> model,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">model_weights =</span> model_weights</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>est_ipw</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; $beta_est</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;                                 psi_updated</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; [1,] 1.070317 1.049116 1.113788    1.091087</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; $se_est</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1648238 0.04313713 0.1272301</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; IPW Estimator:: 0.042 sec elapsed</span></span></code></pre></div>
+<p>Extract coefficients and standard errors:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>ipw_beta <span class="ot">&lt;-</span> est_ipw<span class="sc">$</span>beta_est</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>ipw_se   <span class="ot">&lt;-</span> est_ipw<span class="sc">$</span>se_est</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>ipw_beta</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt;                                 psi_updated</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; [1,] 1.070317 1.049116 1.113788    1.091087</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>ipw_se</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1648238 0.04313713 0.1272301</span></span></code></pre></div>
+<p>If you want the robust sandwich SEs from the dedicated variance
+function:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Suppose est_ipw$beta_est is a 1 x p matrix including psi at the end</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>theta_ipw <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(est_ipw<span class="sc">$</span>beta_est)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;IPW Estimator-Robust Sandwich Estimator:&quot;</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>var_ipw <span class="ot">&lt;-</span> <span class="fu">var_beta_ipw</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">data_yXZ =</span> dat,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="at">theta  =</span> theta_ipw,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="at">model         =</span> model,</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="at">model_weights =</span> model_weights</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; IPW sandwich: finished bread (A matrix).</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; IPW sandwich: finished meat (B matrix).</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>var_ipw<span class="sc">$</span>se_est</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; [1] 0.15297250 0.04140797 0.12467115</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; IPW Estimator-Robust Sandwich Estimator:: 18.78 sec elapsed</span></span></code></pre></div>
+<hr />
+</div>
+<div id="maximum-likelihood-estimator-mle" class="section level2">
+<h2>5. Maximum Likelihood estimator (MLE)</h2>
+<p>The <strong>MLE</strong> approach uses a joint model, combining:</p>
+<ul>
+<li>the outcome model <span class="math inline">\(f_{Y \mid X,
+Z}\)</span>, and<br />
+</li>
+<li>a model for <span class="math inline">\(f_{X \mid Z}\)</span>
+(Weibull AFT),</li>
+</ul>
+<p>and integrates over censored <span class="math inline">\(X\)</span>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>model_xz <span class="ot">=</span> <span class="fu">as.formula</span>(<span class="st">&quot;~Z&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;MLE:&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>est_mle <span class="ot">=</span> <span class="fu">estimate_beta_mle</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="at">data_yXZ =</span> dat,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="at">aw_var   =</span> <span class="st">&quot;AW&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="at">model_xz =</span> model_xz,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="at">trace =</span> <span class="dv">0</span> <span class="co"># Set to 0 if no trace wanted, 1 otherwise</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; Maximizing -- use negfn and neggr</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>est_mle</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; $beta_est</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; [1] 1.072207 1.035141 1.071723 1.049796</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; $gamma_est</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; [1] 1.0836515 0.1146063 0.7301247</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; MLE:: 436.583 sec elapsed</span></span></code></pre></div>
+<p>The corresponding sandwich variance:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>theta_mle <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(est_mle<span class="sc">$</span>beta_est,est_mle<span class="sc">$</span>gamma_est))</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;MLE-Robust Sandwich Estimator:&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>var_mle <span class="ot">&lt;-</span> <span class="fu">var_beta_mle</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>    <span class="at">data_yXZ =</span> dat,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>    <span class="at">theta =</span> theta_mle,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    <span class="at">aw_var   =</span> <span class="st">&quot;AW&quot;</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="at">model_xz =</span> model_xz</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>var_mle<span class="sc">$</span>se_beta</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; [1] 0.25636022 0.06075069 0.26847033</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; MLE-Robust Sandwich Estimator:: 155.359 sec elapsed</span></span></code></pre></div>
+<hr />
+</div>
+<div id="augmented-ipw-aipw-estimator" class="section level2">
+<h2>6. Augmented IPW (AIPW) estimator</h2>
+<p>The <strong>AIPW</strong> estimator combines IPW with an augmentation
+term based on a model for <span class="math inline">\(f_{X \mid
+Z}\)</span>, providing double-robustness-type behavior and improved
+efficiency.</p>
+<p>In the package version, you supply:</p>
+<ul>
+<li><code>model</code>: outcome model,
+e.g. <code>y ~ AW + Z</code><br />
+</li>
+<li><code>model_weights</code>: censoring model for <span class="math inline">\(f_{C | (Y, Z)}\)</span></li>
+<li><code>gamma_x</code>: parameters of the <span class="math inline">\(f_{X \mid Z}\)</span> AFT model (coefficients +
+shape)<br />
+</li>
+<li><code>model_xz</code>: covariate structure for <span class="math inline">\(X | Z\)</span> (RHS-only formula,
+e.g. <code>~ Z</code>)</li>
+</ul>
+<p>In a typical workflow, you would:</p>
+<ol style="list-style-type: decimal">
+<li>Fit a working model for <span class="math inline">\(X | Z\)</span>
+to obtain <span class="math inline">\(\hat\gamma_x\)</span></li>
+<li>Plug <span class="math inline">\(\hat\gamma_x\)</span>into
+<code>estimate_beta_aipw()</code>.</li>
+</ol>
+<p>Here, suppose we have a known or estimated <code>gamma_x</code> from
+the simulation:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>model_xz <span class="ot">&lt;-</span> <span class="er">~</span> Z</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;AIPW:&quot;</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>est_aipw <span class="ot">&lt;-</span> <span class="fu">estimate_beta_aipw</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">data_yXZ      =</span> dat,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">model         =</span> model,</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="at">model_weights =</span> model_weights,</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="at">model_xz      =</span> model_xz,</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="at">aw_var        =</span> <span class="st">&quot;AW&quot;</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="at">lbound        =</span> <span class="dv">0</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  <span class="at">ubound        =</span> <span class="dv">50</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>)</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>est_aipw</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; $beta_est</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt;          [,1]     [,2]     [,3]    [,4]</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; [1,] 1.095292 1.032311 1.022255 1.10332</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt; $beta_se</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1651394 0.04953804 0.1446637</span></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; AIPW:: 347.757 sec elapsed</span></span></code></pre></div>
+<p>AIPW sandwich SEs:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># est_aipw$beta_est is 1 x p, est_aipw$psi_est is scalar</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>theta_aipw <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">as.numeric</span>(est_aipw<span class="sc">$</span>beta_est))</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co"># theta_aipw &lt;- c(as.numeric(est_ipw$beta_est))</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;AIPW Estimator-Robust Sandwich Estimator:&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>var_aipw <span class="ot">&lt;-</span> <span class="fu">var_beta_aipw</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">data_yXZ =</span> dat,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">theta  =</span> theta_aipw,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">model =</span> model,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="at">model_weights =</span> model_weights,</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  <span class="at">model_xz      =</span> model_xz,</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="at">aw_var        =</span> <span class="st">&quot;AW&quot;</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="at">lbound        =</span> <span class="dv">0</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>  <span class="at">ubound        =</span> <span class="dv">50</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>)</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>var_aipw<span class="sc">$</span>se_est</span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; NULL</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; AIPW Estimator-Robust Sandwich Estimator:: 242.657 sec elapsed</span></span></code></pre></div>
+<p>Because the AIPW integrals can be numerically heavy, we keep these
+chunks as <code>eval = FALSE</code> in the vignette. Users can run them
+manually.</p>
+<hr />
+</div>
+<div id="aipwlambda-estimator-closed-form-augmentation" class="section level2">
+<h2>7. AIPW–Lambda estimator (closed-form augmentation)</h2>
+<p>The <strong>AIPW–Lambda</strong> estimator uses an approximation to
+the augmentation term that admits a closed-form expression under
+specific modeling assumptions for <span class="math inline">\(f_{X |
+Z}\)</span>. This provides a computationally cheaper alternative to full
+numerical AIPW.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;AIPW with Lambda Estimator:&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>est_aipw_lambda <span class="ot">&lt;-</span> <span class="fu">estimate_beta_aipw_lambda</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>    <span class="at">data_yXZ =</span> dat,</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    <span class="at">model_weights =</span> model_weights,</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>    <span class="at">aw_var  =</span> <span class="st">&quot;AW&quot;</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>) </span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>est_aipw_lambda</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; $beta_est</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; [1] 1.103977 1.050829 1.068994 1.098800</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; $se_est</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1464258 0.03948936 0.1166038</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; AIPW with Lambda Estimator:: 0.145 sec elapsed</span></span></code></pre></div>
+<p>Variance via the dedicated robust sandwiich estimator function:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>theta_aipw_lambda <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(est_aipw_lambda<span class="sc">$</span>beta_est)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;AIPW with Lambda Estimator-Robust Sandwich Estimator:&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>var_aipw_lambda <span class="ot">&lt;-</span> <span class="fu">var_beta_aipw_lambda</span>(</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="at">data_yXZ =</span> dat,</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="at">mytheta  =</span> theta_aipw_lambda</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>)</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>var_aipw_lambda<span class="sc">$</span>se_est</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; [1] 0.16252245 0.04240213 0.11300726</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="fu">toc</span>()</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; AIPW with Lambda Estimator-Robust Sandwich Estimator:: 1.403 sec elapsed</span></span></code></pre></div>
+<hr />
+</div>
+<div id="comparing-estimators" class="section level2">
+<h2>8. Comparing estimators</h2>
+<p>Once all estimators have been run, we can collect and compare
+them:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>compare_beta <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="at">CC      =</span> est_cc<span class="sc">$</span>beta_est,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="at">IPW     =</span> est_ipw<span class="sc">$</span>beta_est,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">MLE     =</span> est_mle<span class="sc">$</span>beta_est,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="at">AIPW    =</span> est_aipw<span class="sc">$</span>beta_est,</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="at">AIPW_Lambda  =</span> est_aipw_lambda<span class="sc">$</span>beta_est</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="fu">row.names</span>(compare_beta) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;CC&quot;</span>, <span class="st">&quot;IPW&quot;</span>, <span class="st">&quot;MLE&quot;</span>, <span class="st">&quot;AIPW&quot;</span>, <span class="st">&quot;AIPW-Lambda&quot;</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="fu">colnames</span>(compare_beta) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;beta0&quot;</span>, <span class="st">&quot;beta1&quot;</span>, <span class="st">&quot;beta2&quot;</span>, <span class="st">&quot;sigma&quot;</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>compare_beta</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt;                 beta0    beta1    beta2    sigma</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt; CC          0.8771927 1.029750 1.123387 1.076252</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt; IPW         1.0703173 1.049116 1.113788 1.091087</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt; MLE         1.0722067 1.035141 1.071723 1.049796</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; AIPW        1.0952924 1.032311 1.022255 1.103320</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; AIPW-Lambda 1.1039770 1.050829 1.068994 1.098800</span></span></code></pre></div>
+<p>You might also compare <strong>standard errors</strong>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>se_mat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="at">CC      =</span> est_cc<span class="sc">$</span>se_est,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="at">IPW     =</span> var_ipw<span class="sc">$</span>se_est,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="at">MLE     =</span> var_mle<span class="sc">$</span>se_beta,</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="at">AIPW    =</span> var_aipw<span class="sc">$</span>se_beta,</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  <span class="at">AIPW_Lambda  =</span> var_aipw_lambda<span class="sc">$</span>se_est</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>)</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="fu">row.names</span>(se_mat) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;CC&quot;</span>, <span class="st">&quot;IPW&quot;</span>, <span class="st">&quot;MLE&quot;</span>, <span class="st">&quot;AIPW&quot;</span>, <span class="st">&quot;AIPW-Lambda&quot;</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="fu">colnames</span>(se_mat) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;beta0&quot;</span>, <span class="st">&quot;beta1&quot;</span>, <span class="st">&quot;beta2&quot;</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>se_mat</span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt;                 beta0      beta1     beta2</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt; CC          0.1818254 0.04570095 0.1325296</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt; IPW         0.1529725 0.04140797 0.1246711</span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="co">#&gt; MLE         0.2563602 0.06075069 0.2684703</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="co">#&gt; AIPW        0.1507784 0.04173918 0.1221937</span></span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="co">#&gt; AIPW-Lambda 0.1625224 0.04240213 0.1130073</span></span></code></pre></div>
+<p>These summaries highlight:</p>
+<ul>
+<li>bias of CC under outcome-dependent censoring,<br />
+</li>
+<li>improved efficiency of MLE and AIPW/AIPW–Lambda estimators</li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
