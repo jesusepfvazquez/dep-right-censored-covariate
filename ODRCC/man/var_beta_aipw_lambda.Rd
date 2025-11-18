@@ -13,7 +13,7 @@ var_beta_aipw_lambda(data_yXZ, mytheta)
 \item \code{A}: auxiliary covariate,
 \item \code{AW}: \code{A - X} (used in the outcome model),
 \item \code{W}: observed \code{W = min(X, C)},
-\item \code{D}: indicator \code{I(X \le C)},
+\item \code{D}: indicator \code{I(X <= C)},
 \item \code{Z}: covariate in the outcome and censoring models,
 \item \code{myp_ywz}: weights \eqn{\pi(Y, W, Z)} from AFT model (for IPW).
 }}
