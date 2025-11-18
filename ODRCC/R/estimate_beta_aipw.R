@@ -122,6 +122,7 @@ estimate_beta_aipw <- function(
     dist    = "weibull"
   )
 
+  alpha_coef  <- as.numeric(coef(wr))
   shape.c <- 1 / wr$scale
 
   # meanCYZ: on original AFT scale, used in augmentation

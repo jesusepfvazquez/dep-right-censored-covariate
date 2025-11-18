@@ -352,8 +352,8 @@ estimators for regression models when a key covariate is
 <ul>
 <li>a continuous outcome <span class="math inline">\(Y\)</span></li>
 <li>fully observed covariates <span class="math inline">\(Z\)</span>,</li>
-<li>an auxiliary variable <span class="math inline">\(A\)</span> which
-represents age,</li>
+<li>an auxiliary variable <span class="math inline">\(A\)</span>
+(represents age),</li>
 <li>a covariate of interest <span class="math inline">\(X\)</span> that
 is <strong>right-censored</strong> by <span class="math inline">\(C\)</span>,<br />
 so we only observe <span class="math display">\[
@@ -361,13 +361,13 @@ W = \min(X, C), \quad D = I(X \le C).
 \]</span></li>
 </ul>
 <p>A common modeling strategy is to work with the transformed covariate
-<span class="math display">\[
+(indicating time to event) <span class="math display">\[
 AW = A - X,
 \]</span> and fit a regression of the form <span class="math display">\[
 Y = \beta_0 + \beta_1 AW + \beta_2 Z + \epsilon,
 \]</span> where <span class="math inline">\(\epsilon\)</span> is
 mean-zero noise.</p>
-<p>Naive complete-case analysis discards subjects with <span class="math inline">\(D=0\)</span>, leading to:</p>
+<p>The complete-case estimator discards subjects with <span class="math inline">\(D=0\)</span>, leading to:</p>
 <ul>
 <li>loss of efficiency, and<br />
 </li>
@@ -381,11 +381,9 @@ and can improve efficiency:</p>
 for <span class="math inline">\(C \mid (Y, Z)\)</span></li>
 <li><strong>MLE</strong>: likelihood-based estimator using a model for
 <span class="math inline">\(X \mid Z\)</span></li>
-<li><strong>AIPW</strong>: augmented IPW estimator, combining IPW +
-augmentation<br />
-</li>
+<li><strong>AIPW</strong>: augmented IPW estimator</li>
 <li><strong>AIPW-<span class="math inline">\(\Lambda\)</span></strong>:
-a closed-form augmentation variant based on a <span class="math inline">\(\Lambda\)</span>-type adjustment</li>
+a closed-form augmentation variant based on a robust matrix <span class="math inline">\(\Lambda\)</span> adjustment</li>
 </ul>
 <p>This vignette walks through a typical analysis workflow with
 <strong>simulated data</strong>.</p>
@@ -446,8 +444,7 @@ outcome-dependent censoring of <span class="math inline">\(X\)</span>.</p>
 </li>
 <li><code>Z</code> = covariate<br />
 </li>
-<li><code>A</code> = auxiliary variable<br />
-</li>
+<li><code>A</code> = auxiliary variable (age)</li>
 <li><code>X</code> = true covariate (subject to censoring)<br />
 </li>
 <li><code>C</code> = censoring time<br />
@@ -456,7 +453,8 @@ outcome-dependent censoring of <span class="math inline">\(X\)</span>.</p>
 </li>
 <li><code>D</code> = I(X ≤ C)<br />
 </li>
-<li><code>AX</code> = A - X; representing time to event</li>
+<li><code>AX</code> = A - X; representing time to event (e.g.,
+diagnosis)</li>
 <li><code>AW</code> = A - W; coarsened version of AX<br />
 </li>
 <li>various weight variables (e.g., <code>myp_ywz</code>,
@@ -486,7 +484,7 @@ M-estimation:</p>
 <span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1818254 0.04570095 0.1325296</span></span>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 0.129 sec elapsed</span></span></code></pre></div>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 0.044 sec elapsed</span></span></code></pre></div>
 <p><code>estimate_beta_cc()</code> returns:</p>
 <ul>
 <li><code>beta_est</code>: a matrix with the regression coefficients and
@@ -540,7 +538,7 @@ model:</p>
 <span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
 <span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1648238 0.04313713 0.1272301</span></span>
 <span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; IPW Estimator:: 0.042 sec elapsed</span></span></code></pre></div>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; IPW Estimator:: 0.043 sec elapsed</span></span></code></pre></div>
 <p>Extract coefficients and standard errors:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>ipw_beta <span class="ot">&lt;-</span> est_ipw<span class="sc">$</span>beta_est</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>ipw_se   <span class="ot">&lt;-</span> est_ipw<span class="sc">$</span>se_est</span>
@@ -568,7 +566,7 @@ function:</p>
 <span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>var_ipw<span class="sc">$</span>se_est</span>
 <span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; [1] 0.15297250 0.04140797 0.12467115</span></span>
 <span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; IPW Estimator-Robust Sandwich Estimator:: 18.78 sec elapsed</span></span></code></pre></div>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; IPW Estimator-Robust Sandwich Estimator:: 19.35 sec elapsed</span></span></code></pre></div>
 <hr />
 </div>
 <div id="maximum-likelihood-estimator-mle" class="section level2">
@@ -600,7 +598,7 @@ Z}\)</span>, and<br />
 <span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; $gamma_est</span></span>
 <span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; [1] 1.0836515 0.1146063 0.7301247</span></span>
 <span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; MLE:: 436.583 sec elapsed</span></span></code></pre></div>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; MLE:: 444.252 sec elapsed</span></span></code></pre></div>
 <p>The corresponding sandwich variance:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>theta_mle <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(est_mle<span class="sc">$</span>beta_est,est_mle<span class="sc">$</span>gamma_est))</span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
@@ -615,36 +613,22 @@ Z}\)</span>, and<br />
 <span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>var_mle<span class="sc">$</span>se_beta</span>
 <span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; [1] 0.25636022 0.06075069 0.26847033</span></span>
 <span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; MLE-Robust Sandwich Estimator:: 155.359 sec elapsed</span></span></code></pre></div>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; MLE-Robust Sandwich Estimator:: 155.849 sec elapsed</span></span></code></pre></div>
 <hr />
 </div>
 <div id="augmented-ipw-aipw-estimator" class="section level2">
 <h2>6. Augmented IPW (AIPW) estimator</h2>
 <p>The <strong>AIPW</strong> estimator combines IPW with an augmentation
-term based on a model for <span class="math inline">\(f_{X \mid
-Z}\)</span>, providing double-robustness-type behavior and improved
-efficiency.</p>
+term providing improved efficiency.</p>
 <p>In the package version, you supply:</p>
 <ul>
 <li><code>model</code>: outcome model,
 e.g. <code>y ~ AW + Z</code><br />
 </li>
 <li><code>model_weights</code>: censoring model for <span class="math inline">\(f_{C | (Y, Z)}\)</span></li>
-<li><code>gamma_x</code>: parameters of the <span class="math inline">\(f_{X \mid Z}\)</span> AFT model (coefficients +
-shape)<br />
-</li>
 <li><code>model_xz</code>: covariate structure for <span class="math inline">\(X | Z\)</span> (RHS-only formula,
 e.g. <code>~ Z</code>)</li>
 </ul>
-<p>In a typical workflow, you would:</p>
-<ol style="list-style-type: decimal">
-<li>Fit a working model for <span class="math inline">\(X | Z\)</span>
-to obtain <span class="math inline">\(\hat\gamma_x\)</span></li>
-<li>Plug <span class="math inline">\(\hat\gamma_x\)</span>into
-<code>estimate_beta_aipw()</code>.</li>
-</ol>
-<p>Here, suppose we have a known or estimated <code>gamma_x</code> from
-the simulation:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>model_xz <span class="ot">&lt;-</span> <span class="er">~</span> Z</span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">tic</span>(<span class="st">&quot;AIPW:&quot;</span>)</span>
@@ -666,7 +650,7 @@ the simulation:</p>
 <span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
 <span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1651394 0.04953804 0.1446637</span></span>
 <span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; AIPW:: 347.757 sec elapsed</span></span></code></pre></div>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; AIPW:: 9076.93 sec elapsed</span></span></code></pre></div>
 <p>AIPW sandwich SEs:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># est_aipw$beta_est is 1 x p, est_aipw$psi_est is scalar</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>theta_aipw <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">as.numeric</span>(est_aipw<span class="sc">$</span>beta_est))</span>
@@ -686,10 +670,7 @@ the simulation:</p>
 <span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>var_aipw<span class="sc">$</span>se_est</span>
 <span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; NULL</span></span>
 <span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; AIPW Estimator-Robust Sandwich Estimator:: 242.657 sec elapsed</span></span></code></pre></div>
-<p>Because the AIPW integrals can be numerically heavy, we keep these
-chunks as <code>eval = FALSE</code> in the vignette. Users can run them
-manually.</p>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; AIPW Estimator-Robust Sandwich Estimator:: 20588.369 sec elapsed</span></span></code></pre></div>
 <hr />
 </div>
 <div id="aipwlambda-estimator-closed-form-augmentation" class="section level2">
@@ -714,7 +695,7 @@ numerical AIPW.</p>
 <span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;           [,1]       [,2]      [,3]</span></span>
 <span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; [1,] 0.1464258 0.03948936 0.1166038</span></span>
 <span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; AIPW with Lambda Estimator:: 0.145 sec elapsed</span></span></code></pre></div>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; AIPW with Lambda Estimator:: 0.142 sec elapsed</span></span></code></pre></div>
 <p>Variance via the dedicated robust sandwiich estimator function:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>theta_aipw_lambda <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(est_aipw_lambda<span class="sc">$</span>beta_est)</span>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
@@ -726,7 +707,7 @@ numerical AIPW.</p>
 <span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>var_aipw_lambda<span class="sc">$</span>se_est</span>
 <span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; [1] 0.16252245 0.04240213 0.11300726</span></span>
 <span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; AIPW with Lambda Estimator-Robust Sandwich Estimator:: 1.403 sec elapsed</span></span></code></pre></div>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; AIPW with Lambda Estimator-Robust Sandwich Estimator:: 1.413 sec elapsed</span></span></code></pre></div>
 <hr />
 </div>
 <div id="comparing-estimators" class="section level2">
