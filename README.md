@@ -1,4 +1,4 @@
-# ODRCC: Robust Estimation Under Outcome-Dependent Right Censoring
+# ODRCC: Outcome-Dependent Right Censored Covariates
 
 ODRCC provides simulation tools and estimation routines for regression models that include outcome-dependent right-censored covariates (ODRCC). The package accompanies the manuscript:
 
@@ -14,15 +14,15 @@ The package implements several estimation methods for regression parameters unde
 |----------------|-----------------------------------------------------|
 | CC             | Complete-case estimator                             |
 | IPW            | Inverse probability weighting estimator             |
-| MLE            | Likelihood-based estimator                          |
+| MLE            | Maximum likelihood estimator                        |
 | AIPW           | Augmented inverse probability weighting             |
-| AIPW-Lambda    | Closed-form augmentation approach                   |
+| AIPW-Lambda    | Closed-form AIPW estimator                          |
 
 Additional tools included:
 
 - Data generation via `data_aft()`
 - Modeling for X|Z and C|(Y,Z)
-- Sandwich variance estimation
+- Robust sandwich variance estimation
 - Example workflows and simulation templates
 
 ---
@@ -30,10 +30,6 @@ Additional tools included:
 ## Installation
 
 ```
-# install dependency (if needed)
-install.packages("geex")
-install.packages(c("tictoc", "cubature", "numDeriv", "survival", "dplyr", "optimx"))
-
 # install.packages("devtools")  # if needed
 devtools::install_github(
   "jesusepfvazquez/dep-right-censored-covariate",
