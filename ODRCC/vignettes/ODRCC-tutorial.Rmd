@@ -30,14 +30,14 @@ In many applications, we observe
 
 - a continuous outcome $Y$
 - fully observed covariates $Z$,
-- an auxiliary variable $A$ which represents age,
+- an auxiliary variable $A$ (represents age),
 - a covariate of interest $X$ that is **right-censored** by $C$,  
   so we only observe
   $$
   W = \min(X, C), \quad D = I(X \le C).
   $$
 
-A common modeling strategy is to work with the transformed covariate
+A common modeling strategy is to work with the transformed covariate (indicating time to event)
 $$
 AW = A - X,
 $$
@@ -47,7 +47,7 @@ Y = \beta_0 + \beta_1 AW + \beta_2 Z + \epsilon,
 $$
 where $\epsilon$ is mean-zero noise.
 
-Naive complete-case analysis discards subjects with $D=0$, leading to:
+The complete-case estimator discards subjects with $D=0$, leading to:
 
 - loss of efficiency, and  
 - potential **bias** when censoring depends on the outcome (outcome-dependent censoring).
@@ -56,8 +56,8 @@ Naive complete-case analysis discards subjects with $D=0$, leading to:
 
 - **IPW**: inverse probability weighting using a model for $C \mid (Y, Z)$ 
 - **MLE**: likelihood-based estimator using a model for $X \mid Z$
-- **AIPW**: augmented IPW estimator, combining IPW + augmentation  
-- **AIPW-$\Lambda$**: a closed-form augmentation variant based on a $\Lambda$-type adjustment
+- **AIPW**: augmented IPW estimator
+- **AIPW-$\Lambda$**: a closed-form augmentation variant based on a robust matrix $\Lambda$ adjustment
 
 This vignette walks through a typical analysis workflow with **simulated data**.
 
@@ -87,12 +87,12 @@ In this simulated dataset:
 
 - `y` = outcome  
 - `Z` = covariate  
-- `A` = auxiliary variable  
+- `A` = auxiliary variable (age) 
 - `X` = true covariate (subject to censoring)  
 - `C` = censoring time  
 - `W` = min(X, C)  
 - `D` = I(X ≤ C)  
-- `AX` = A - X; representing time to event
+- `AX` = A - X; representing time to event (e.g., diagnosis)
 - `AW` = A - W; coarsened version of AX  
 - various weight variables (e.g., `myp_ywz`, `myp_ywz_oracle`, etc.)  
 
@@ -239,21 +239,13 @@ toc()
 
 ## 6. Augmented IPW (AIPW) estimator
 
-The **AIPW** estimator combines IPW with an augmentation term based on a model for $f_{X \mid Z}$, providing double-robustness-type behavior and improved efficiency.
+The **AIPW** estimator combines IPW with an augmentation term providing improved efficiency.
 
 In the package version, you supply:
 
 - `model`: outcome model, e.g. `y ~ AW + Z`  
 - `model_weights`: censoring model for $f_{C | (Y, Z)}$ 
-- `gamma_x`: parameters of the $f_{X \mid Z}$ AFT model (coefficients + shape)  
 - `model_xz`: covariate structure for $X | Z$ (RHS-only formula, e.g. `~ Z`)
-
-In a typical workflow, you would:
-
-1. Fit a working model for $X | Z$ to obtain $\hat\gamma_x$
-2. Plug $\hat\gamma_x$into `estimate_beta_aipw()`.
-
-Here, suppose we have a known or estimated `gamma_x` from the simulation:
 
 ```{r aipw-gamma-setup, eval = TRUE}
 model_xz <- ~ Z
@@ -294,14 +286,11 @@ var_aipw$se_est
 toc()
 ```
 
-Because the AIPW integrals can be numerically heavy, we keep these chunks as `eval = FALSE` in the vignette. Users can run them manually.
-
 ---
 
 ## 7. AIPW–Lambda estimator (closed-form augmentation)
 
 The **AIPW–Lambda** estimator uses an approximation to the augmentation term that admits a closed-form expression under specific modeling assumptions for $f_{X | Z}$. This provides a computationally cheaper alternative to full numerical AIPW.
-
 
 ```{r lambda-estimator, eval = TRUE}
 tic("AIPW with Lambda Estimator:")
