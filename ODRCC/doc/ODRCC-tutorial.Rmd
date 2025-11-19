@@ -8,10 +8,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-devtools::document()   # update documentation + NAMESPACE
-devtools::load_all()   # reload package into environment
+```{R, include = FALSE, eval = TRUE}
+# devtools::document()   # update documentation + NAMESPACE
+# devtools::load_all()   # reload package into environment
+```
 
+```{r setup, include = FALSE}
 rm(list = ls())
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -77,11 +79,11 @@ We will use the internal data-generating function `data_aft()` which simulates d
 ```{r simulate-data}
 set.seed(2025)
 
-n <- 100
+n <- 300
 dat <- data_aft(nSubjects = n)
 
 str(dat)
-mean(dat$D)
+summary(dat$D)
 ```
 In this simulated dataset:
 
@@ -165,6 +167,15 @@ est_ipw <- estimate_beta_ipw(
 est_ipw
 toc()
 ```
+Extract coefficients and standard errors:
+
+```{r ipw-coefs}
+ipw_beta <- est_ipw$beta_est
+ipw_se   <- est_ipw$se_est
+
+ipw_beta
+ipw_se
+```
 
 If you want the robust sandwich SEs from the dedicated variance function:
 
@@ -172,7 +183,7 @@ If you want the robust sandwich SEs from the dedicated variance function:
 # Suppose est_ipw$beta_est is a 1 x p matrix including psi at the end
 theta_ipw <- as.numeric(est_ipw$beta_est)
 
-tic("IPW Estimator-Robust Sandwich Estimator")
+tic("IPW Estimator-Robust Sandwich Estimator:")
 var_ipw <- var_beta_ipw(
   data_yXZ = dat,
   theta  = theta_ipw,
@@ -180,123 +191,6 @@ var_ipw <- var_beta_ipw(
   model_weights = model_weights
 )
 var_ipw$se_est
-toc()
-```
-```{r ipw-var original, eval = FALSE, echo=FALSE}
-tic()
-var_beta_ipw_original <- function(data_yXZ, mytheta){
-
-  # data_yXZ = dat
-  # mytheta = c(1,1,1,1)
-  wr <- survreg(Surv(W, 1-D) ~ y + Z, data = data_yXZ, dist="w")
-  myalpha = c(coef(wr), wr$scale)
-  # myalpha = c(1, -0.5, 0.5, 2)
-  mybeta = mytheta[1:(length(mytheta)-1)]
-  mypsi = mytheta[length(mytheta)]
-  myxi = c(mybeta,myalpha)
-
-  #########################################################
-  # alpha helper functions
-  dgumbel = function(x, shape, scale){
-    (1/shape)*exp((x-scale)/shape)*exp(-exp((x-scale)/shape))
-  }
-
-  pgumbel = function(x, shape, scale){
-    exp(-exp((x-scale)/shape))
-  }
-
-  pi_xz_func.b = function(data. = data_yXZ, myalpha. = myalpha){
-    data.$W = log(data.$W)
-    gamma.x.vec = myalpha.[1:3]
-    shape.x = myalpha.[4]
-    linPred_yz = cbind(rep(1,nrow(data.)),data.$y, data.$Z)%*%gamma.x.vec
-    return(pgumbel(data.$W, shape=shape.x, scale = linPred_yz))
-  }
-
-  alpha.logLik.b = function(data.=data_yXZ, myalpha. = myalpha){
-    data.$W = log(data.$W)
-    gamma.x.vec = myalpha.[1:3]
-    shape.x = myalpha.[4]
-    linPred_yz = cbind(rep(1,nrow(data.)),data.$y, data.$Z)%*%gamma.x.vec
-
-    myreturn = (1-data.$D)*dgumbel(data.$W, shape=shape.x, scale = linPred_yz)+
-      data.$D*pgumbel(data.$W, shape=shape.x, scale = linPred_yz)
-
-    return(log(myreturn))
-  }
-
-  alpha.jacobian.b = function(data){
-    myderiv = numDeriv::jacobian(function(x)
-      alpha.logLik.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
-    return(matrix(ncol=1, myderiv))
-  }
-  # alpha.jacobian.b(data_yXZ[1,])
-
-  alpha.hessian.b = function(data){
-    myderiv = numDeriv::hessian(function(x)
-      alpha.logLik.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
-    return(myderiv)
-  }
-  # alpha.hessian.b(data_yXZ[1,])
-
-  #########################################################
-  # define the stacked score equation
-  ipwscore.b <- function(myxi., data.b){
-
-    # myxi. = myxi; data.b = dat[1,]
-    mybeta. = myxi.[1:length(mybeta)]
-    myalpha. = myxi.[(length(mybeta)+1):length(myxi.)]
-
-    ######################
-    ## IPW
-    X <- model.matrix(object =  y~AW+Z, data = data.b)
-    Y <- model.response(model.frame(formula =  y~AW+Z, data = data.b))
-    myp = pi_xz_func.b(data.=data.b, myalpha. = myalpha.)
-    D <- data.b$D
-
-    mu <- X %*% mybeta.
-    e = Y - mu
-    # score equations for betas
-    dotbeta = (e/mypsi^2)%*%X
-    dotbeta = dotbeta*c(D/myp)
-
-    ########################
-    ## alpha
-    dotalpha = numDeriv::jacobian(function(x)
-      alpha.logLik.b(myalpha. = x, data. = data.b), myalpha., method = "Richardson")
-
-    return(c(dotbeta,dotalpha))
-  }
-
-  # A matrix
-  calculate.A = function(){
-    part1 = lapply(1:nrow(data_yXZ), function(i)
-      dotalpha = numDeriv::jacobian(function(x)
-        ipwscore.b(myxi. = x, data.b = data_yXZ[i,]), myxi, method = "Richardson")
-    )
-    part1 = Reduce("+", part1) #/nrow(data_yXZ)
-  }
-  myA = calculate.A()
-  myA.inv = solve(myA)
-  print("done with bread")
-
-  # B matrix
-  calculate.B = function(){
-    part1 = parallel::mclapply(1:nrow(data_yXZ), function(i){
-      dotalpha = ipwscore.b(myxi. = myxi, data.b = data_yXZ[i,])
-      return(dotalpha %*% t(dotalpha))}
-    )
-    part1 = Reduce("+", part1)
-    return(part1)
-  }
-  myB = calculate.B()
-  print("done with meat")
-
-  sand.var = myA.inv%*%myB%*%t(myA.inv)
-
-  return(list(beta_est = mytheta, se_est = sqrt(diag(sand.var))[1:3]))
-}
-var_beta_ipw_original(dat, theta_ipw)
 toc()
 ```
 
@@ -314,7 +208,7 @@ and integrates over censored $X$.
 ```{r mle-estimator, eval = TRUE}
 model_xz = as.formula("~Z")
 
-tic("MLE")
+tic("MLE:")
 est_mle = estimate_beta_mle(
     data_yXZ = dat,
     model = model,
@@ -340,142 +234,10 @@ var_mle <- var_beta_mle(
     aw_var   = "AW",
     model_xz = model_xz
 )
-var_mle
+var_mle$se_beta
 toc()
 ```
 
-```{r mle-var original, eval = FALSE, echo=FALSE}
-tic()
-var_beta_mle_original <- function(data_yXZ, theta){
-
-  # data_yXZ = dat
-  # theta = as.numeric(est63$beta_est)
-  # theta = c(1,1,1,1,1, 0.1, 0.8)
-  data_yXZ$b = 1:nrow(data_yXZ)
-  upperbound = Inf
-
-  #########################################################
-  # define the stacked score equation
-  b.mle <- function(data.b, d1 = TRUE){
-
-    # loglikelihood
-    logLik.b = function(theta. = theta){
-
-      # theta. = theta
-      # data.b = dat[1,]
-
-      W <- model.matrix(object = ~ A + Z, data = data.b)
-      X <- model.matrix(object = y ~ AW+Z, data = data.b)
-      Y <- model.response(model.frame(formula = y ~ AW+Z, data = data.b))
-
-      D <- data.b$D
-      w <- data.b$W
-      z <- data.b$Z
-
-      ###############################
-      # set theta
-      beta = theta.[1:3]
-      psi = theta.[4]
-      gamma.x.vec = theta.[5:6]
-      shape.x = theta.[7]
-
-      # X|Z
-      meanXZ = exp(matrix(cbind(1,z),nrow = 1)%*%matrix(gamma.x.vec, ncol=1))
-
-      ################################
-      # delta = 1
-      mu <- X %*% beta
-      e = Y - mu
-
-      delta1 = function() {
-        # compute likelihood
-        myreturn = dnorm(e, 0, sd = psi)*
-          dweibull(w, shape=1/shape.x, scale = meanXZ)
-        return(log(myreturn))
-      }
-
-      ################################
-      # delta = 0
-      delta0 = function() {
-
-        # f|X,Z
-        likelihood_int = function(t=1){
-          return(dnorm(Y -  (cbind(W[,1],W[,2]-t, W[,3]) %*% beta), 0, sd = psi))
-        }
-
-        # integral
-        integral_func_denom <- function(t=1){
-          val = rep(NA, length(t))
-          for (i in 1:length(t)){
-            val[i] = likelihood_int(t[i])*
-              dweibull(t[i], shape=1/shape.x, scale = meanXZ)
-          }
-          return(val)
-        }
-
-        # evaluate
-        # myreturn = cubintegrate(function(x) integral_func_denom(t=x),
-        #                         lower = w,
-        #                         upper = upperbound)$integral
-        myreturn <- stats::integrate(function(x) integral_func_denom(t=x),
-                                lower = w,
-                                upper = upperbound)$value
-        return(log(myreturn))
-      }
-
-      ##############################################
-      if(D == 1) return(delta1())
-      if(D == 0) return(delta0())
-
-    }
-
-
-    # first derivative
-    if(d1){
-      myderiv = numDeriv::jacobian(function(x)
-        logLik.b(theta. = x), theta, method = "Richardson") %>%
-        matrix(ncol=1)
-    }
-
-    # second derivative
-    if(d1==FALSE){
-      myderiv = numDeriv::hessian(function(x)
-        logLik.b(theta. = x), theta, method = "Richardson")
-    }
-
-    return(myderiv)
-  }
-  # b.mle(dat[1,], d1=TRUE)
-
-  # B matrix
-  calculate.B = function(){
-    part1 = lapply(1:nrow(data_yXZ), function(i){
-      dotalpha = b.mle(data.b = data_yXZ[i,], d1 = TRUE)
-      return(dotalpha %*% t(dotalpha))}
-    )
-    part1 = Reduce("+", part1)
-    return(part1)
-  }
-  myB = calculate.B()
-  print("done Meat")
-  # A matrix
-  calculate.A = function(){
-    part1 = lapply(1:nrow(data_yXZ), function(i) dotalpha = b.mle(data.b = data_yXZ[i,], d1 = FALSE))
-    part1 = Reduce("+", part1)
-  }
-  myA = calculate.A()
-
-  print("done Bread")
-  myA.inv = solve(myA)
-
-  sand.var = myA.inv%*%myB%*%t(myA.inv)
-  # return my sandwich variance estimator
-
-  return(list(beta_est = theta[1:4], se_est = sqrt(diag(sand.var))[1:3]))
-}
-var_beta_mle_original(dat, theta_mle)
-toc()
-```
 ---
 
 ## 6. Augmented IPW (AIPW) estimator
@@ -510,6 +272,7 @@ AIPW sandwich SEs:
 ```{r aipw-var, eval = TRUE}
 # est_aipw$beta_est is 1 x p, est_aipw$psi_est is scalar
 theta_aipw <- c(as.numeric(est_aipw$beta_est))
+# theta_aipw <- c(as.numeric(est_ipw$beta_est))
 
 tic("AIPW Estimator-Robust Sandwich Estimator:")
 var_aipw <- var_beta_aipw(
@@ -518,493 +281,7 @@ var_aipw <- var_beta_aipw(
   lbound        = 0,
   ubound        = 50
 )
-var_aipw
-toc()
-```
-
-
-```{r aipw original, eval = FALSE, echo = FALSE}
-# Original 
-
-tic("AIPW original")
-estimate_beta_aipw_est <- function(data_yXZ, model, lbound = 0, mybound = 50){
-
-  ## estimate C|Y,Z
-  wr <- survreg(Surv(W, 1-D) ~ y + Z, data = data_yXZ, dist="w")
-  data_yXZ$meanCYZ = exp(wr$linear.predictors)
-  
-  wr_z <- survreg(Surv(W, D) ~ Z, data = data_yXZ, dist="w")
-  data_yXZ$meanXZ = exp(wr_z$linear.predictors)
-
-  ######################################################
-  # define parameters values for integration component #
-  ######################################################
-  shape.c = 1/wr$scale
-  shape.x = 1/wr_z$scale
-
-  #################### Weight ####################
-
-  data_yXZ$myp = data_yXZ$myp_ywz
-
-  ########  DEFINE ESTIMATING FUNCTION ##########
-  gee_estfun <- function(data, formula){
-
-    W <- model.matrix(object = ~ A + Z, data = data)
-    X <- model.matrix(object = formula, data = data)
-    Y <- model.response(model.frame(formula = formula, data = data))
-    D <- data$D
-    z <- data$Z
-    myp <- data$myp
-
-    # need these for integration components
-    meanXZ = data$meanXZ
-    meanCYZ = data$meanCYZ
-
-    # meanCXZ // needs to be estimated for each case of X
-
-    function(theta){
-
-      #################
-      # 1st Component #
-      #################
-      CCscore <- function(){
-        # useful quantities
-        mu <- X %*% theta
-        e = Y - mu
-        # score equations for betas
-        dotbeta = (e/psi^2)%*%X
-        return(c(dotbeta))
-      }
-
-      #######################
-      # Augmented Component #
-      #######################
-      # augmentation component
-      psi_hat_i <- function(){
-
-        # top integral
-        likelihood_int = function(t=1){
-          return(dnorm(Y -  cbind(W[,1],W[,2] - t, W[,3]) %*% theta, 0, sd = psi))
-        }
-
-        # score of integral
-        score_int <- function(t=1,j=1){
-          # generate empty array of values to save
-          # create temporary X matrix
-          Wtemp <- cbind(W[,1], W[,2]- t, W[,3])
-          mu <- Wtemp %*% theta
-          e = Y - mu
-          # score equations for theta
-          dotbeta = (e/psi^2)%*%Wtemp
-          return(c(dotbeta)[j])
-        }
-
-        #top integral#
-        ## switch tt instead of t
-        integral_func_num <- function(t=1,j=1){
-          val = rep(NA, length(t))
-          for (i in 1:length(t)){
-            val[i] = score_int(t[i],j=j)*likelihood_int(t[i])*
-              dweibull(t[i], shape=shape.x, scale = meanXZ) *
-              (1-1/pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE))
-          }
-          return(val)
-        }
-
-        ### Evaluate
-        j_numerator_integrate <- function(jj=1) {
-          integrate(function(y) {integral_func_num(t=y,j=jj)},
-                    lower = lbound, upper = mybound)$value}
-        v.area_num <- Vectorize(j_numerator_integrate)
-        numerator = v.area_num(1:3)
-
-        # bottom integral
-        integral_func_denom <- function(t=1){
-          val = rep(NA, length(t))
-          for (i in 1:length(t)){
-            val[i] = likelihood_int(t[i])*
-              dweibull(t[i], shape=shape.x, scale = meanXZ)*
-              (1-1/pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE)) # (1-1/pi)
-          }
-          return(val)
-        }
-
-        ### Evaluate
-        denominator = integrate(integral_func_denom,
-                                lower = lbound, upper = mybound)$value
-
-        # Compute Augmented part
-        # if (denominator==0) denominator = 1e-5
-
-        return(numerator/denominator)
-      }
-
-      myreturn = CCscore()*D/myp + (1-D/myp)*psi_hat_i()
-      # print(myreturn); print(data$b)
-      return(myreturn)
-    }
-  }
-
-  ######## EST INITIAL PARAMETER ESTIMATES ##########
-  mylmer  = lm(model, data = data_yXZ, weights = D/myp)
-  g = c(coef(mylmer))
-  psi = summary(mylmer)$sigma
-  print(g)
-
-  ######## RUNNING M ESTIMATE FUNCTION ##########
-  results <- m_estimate(
-    estFUN = gee_estfun,
-    data = data_yXZ,
-    root_control = setup_root_control(start = c(g)),
-    outer_args = list(formula = model),
-    deriv_control = setup_deriv_control(method = 'simple')
-  )
-
-  ######## RETURN ESTIMATES ##########
-  beta_estimates <- results@estimates %>% t() %>% matrix()
-  data_yXZ = data_yXZ %>% subset(D==1)
-  psi_updated = sum((data_yXZ$y - model.matrix(object = model, data = data_yXZ)%*%beta_estimates)^2/(nrow(data_yXZ))) %>% sqrt
-  beta_estimates = rbind(beta_estimates, psi_updated)
-  se_estimates <- diag(results@vcov)^0.5 %>% t() %>% matrix()
-  return(list(beta_est = t(beta_estimates), se_est = t(se_estimates)))
-}
-est_aipw_original = estimate_beta_aipw_est(dat, y~AW+Z)
-est_aipw_original
-toc()
-
-tic("AIPW original SE")
-var_beta_aipw_est <- function(data_yXZ=dat, mytheta=est_aipw_original$beta_est, lbound = 0, mybound = 50){
-
-  ##############################################################
-  # Step 1: define parameters values for integration component #
-  ##############################################################
-  wr <- survreg(Surv(W, 1-D) ~ y + Z, data = data_yXZ, dist="w")
-  myalpha = c(coef(wr), wr$scale)
-  wr_z <- survreg(Surv(W, D) ~ Z, data = data_yXZ, dist="w")
-  mygamma = c(coef(wr_z), wr_z$scale)
-
-  # mytheta = est32$beta_est
-  mybeta = mytheta[1:3]
-  mypsi = mytheta[4]
-  data_yXZ$meanXZ = exp(mygamma[1] + mygamma[2]*data_yXZ$Z)
-  data_yXZ$meanCYZ = exp(wr$linear.predictors)
-
-  shape.c = 1/wr$scale
-  shape.x = 1/mygamma[3]
-  data_yXZ$myp = data_yXZ$myp_ywz
-
-  ##############################################################
-  # Step 2: Define helper functions
-  ##############################################################
-  dgumbel = function(x, shape, scale){
-    (1/shape)*exp((x-scale)/shape)*exp(-exp((x-scale)/shape))
-  }
-
-  pgumbel = function(x, shape, scale){
-    exp(-exp((x-scale)/shape))
-  }
-
-  pi_xz_func.b = function(data. = data_yXZ, myalpha. = myalpha){
-    data.$W = log(data.$W)
-    gamma.x.vec = myalpha.[1:3]
-    shape.x = myalpha.[4]
-    linPred_yz = cbind(rep(1,nrow(data.)),data.$y, data.$Z)%*%gamma.x.vec
-    return(pgumbel(data.$W, shape=shape.x, scale = linPred_yz))
-  }
-  # pi_xz_func.b(data_yXZ[1,])
-
-  jacobian_pi.b = function(data){
-    myderiv = numDeriv::jacobian(function(x)
-      pi_xz_func.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
-    return(matrix(ncol=1, myderiv))
-  }
-  # jacobian_pi.b(data_yXZ[1,])
-
-  alpha.logLik.b = function(data.=data_yXZ, myalpha. = myalpha){
-    data.$W = log(data.$W)
-    gamma.x.vec = myalpha.[1:3]
-    shape.x = myalpha.[4]
-    linPred_yz = cbind(rep(1,nrow(data.)),data.$y, data.$Z)%*%gamma.x.vec
-
-    myreturn = (1-data.$D)*dgumbel(data.$W, shape=shape.x, scale = linPred_yz)+
-      data.$D*pgumbel(data.$W, shape=shape.x, scale = linPred_yz)
-
-    return(log(myreturn))
-  }
-  # alpha.logLik.b(data_yXZ[1,])
-
-  alpha.jacobian.b = function(data){
-    myderiv = numDeriv::jacobian(function(x)
-      alpha.logLik.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
-    return(matrix(ncol=1, myderiv))
-  }
-  # alpha.jacobian.b(data_yXZ[1,])
-
-  alpha.hessian.b = function(data){
-    myderiv = numDeriv::hessian(function(x)
-      alpha.logLik.b(myalpha. = x, data. = data), myalpha, method = "Richardson")
-    return(myderiv)
-  }
-  # alpha.hessian.b(data_yXZ[1,])
-
-  ## 1. The A_alpha matrix
-  calculate_A_alpha = function(){
-    # calculate the hessian matrix and return
-    part1= lapply(1:nrow(data_yXZ), function(x) alpha.hessian.b(data_yXZ[x,]))
-    part1 = Reduce("+", part1)/nrow(data_yXZ)
-    return(part1)
-  }
-  my_A_alpha_inv = -solve(calculate_A_alpha())
-  my_A_alpha_inv 
-  
-  ## 2. The A_aipw of theta
-  calculate_A_aipw = function(){
-
-    theta = mybeta
-    psi = mypsi
-
-    A_aipw.b = function(data) {
-
-      W <- model.matrix(object = ~ A + Z, data = data)
-      X <- model.matrix(object =  y~ AW+Z, data = data)
-      Y <- model.response(model.frame(formula =  y~ AW+Z, data = data))
-      D <- data$D
-      z <- data$Z
-
-      # need these for integration components
-      meanXZ = data$meanXZ
-      meanCYZ = data$meanCYZ
-
-      # calculate the IPW score equation
-      AIPWscore <- function(myalpha.){
-        
-        myp = pi_xz_func.b(data.=data, myalpha. = myalpha.)
-
-        CCscore <- function(){
-          # useful quantities
-          mu <- X %*% theta
-          e = Y - mu
-          # score equations for betas
-          dotbeta = (e/psi^2)%*%X
-          return(c(dotbeta))
-        }
-
-        #######################
-        # Augmented Component #
-        #######################
-        # augmentation component
-        psi_hat_i <- function(){
-
-          # top integral
-          likelihood_int = function(t=1){
-            return(dnorm(Y -  cbind(W[,1],W[,2] - t, W[,3]) %*% theta, 0, sd = psi))
-          }
-
-          # score of integral
-          score_int <- function(t=1,j=1){
-            # generate empty array of values to save
-            # create temporary X matrix
-            Wtemp <- cbind(W[,1], W[,2]- t, W[,3])
-            mu <- Wtemp %*% theta
-            e = Y - mu
-            # score equations for theta
-            dotbeta = (e/psi^2)%*%Wtemp
-            return(c(dotbeta)[j])
-          }
-
-          #top integral#
-          ## switch tt instead of t
-          integral_func_num <- function(t=1,j=1){
-            val = rep(NA, length(t))
-            for (i in 1:length(t)){
-              val[i] = score_int(t[i],j=j)*likelihood_int(t[i])*
-                dweibull(t[i], shape=shape.x, scale = meanXZ) *
-                (1-1/pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE))
-            }
-            return(val)
-          }
-
-          ### Evaluate
-          j_numerator_integrate <- function(jj=1) {
-            integrate(function(y) {integral_func_num(t=y,j=jj)},
-                      lower = lbound, upper = mybound)$value}
-          v.area_num <- Vectorize(j_numerator_integrate)
-          numerator = v.area_num(1:3)
-
-          # bottom integral
-          integral_func_denom <- function(t=1){
-            val = rep(NA, length(t))
-            for (i in 1:length(t)){
-              val[i] = likelihood_int(t[i])*
-                dweibull(t[i], shape=shape.x, scale = meanXZ)*
-                (1-1/pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE)) # (1-1/pi)
-              }
-            return(val)
-          }
-
-          ### Evaluate
-          denominator = integrate(integral_func_denom,
-                                  lower = lbound, upper = mybound)$value
-
-          # Compute Augmented part
-          return(numerator/denominator)
-        }
-
-
-        myreturn = CCscore()*c(D/myp) + c(1-D/myp)*psi_hat_i()
-        return(myreturn)
-      }
-
-      # calculate the partial derivative
-      myderiv = numDeriv::jacobian(function(x)
-        AIPWscore(myalpha. = x), myalpha, method = "Richardson")
-      return(myderiv)
-    }
-
-    # calculate the hessian matrix and return
-    part1= lapply(1:nrow(data_yXZ), function(x) A_aipw.b(data_yXZ[x,]))
-    part1 = Reduce("+", part1)/nrow(data_yXZ)
-    return(part1)
-  }
-  my_A_aipw = calculate_A_aipw()
-  my_A_aipw
-
-  ##############################################################
-  # Step 3: Calculate the A and the B matrices
-  ##############################################################
-
-  aipw.lambda.b <- function(theta, data.b){
-
-    psi = mypsi
-
-    # W <- model.matrix(object = ~ A + Z + Z2 + Z3, data = data.b)
-    # X <- model.matrix(object = y ~ AW + Z + Z2 + Z3, data = data.b)
-    # Y <- model.response(model.frame(formula = y ~ AW + Z + Z2 + Z3, data = data.b))
-    W <- model.matrix(object = ~ A + Z , data = data.b)
-    X <- model.matrix(object = y ~ AW + Z, data = data.b)
-    Y <- model.response(model.frame(formula = y ~ AW + Z, data = data.b))
-    D <- data.b$D
-    myp <- data.b$myp
-
-    meanXZ = data.b$meanXZ
-    meanCYZ = data.b$meanCYZ
-
-    #################
-    # 1st Component #
-    #################
-    CCscore <- function(){
-      # useful quantities
-      mu <- X %*% theta
-      e = Y - mu
-      # score equations for betas
-      dotbeta = (e/psi^2)%*%X
-      return(c(dotbeta))
-    }
-
-    #######################
-    # Augmented Component #
-    #######################
-
-    psi_hat_i <- function(){
-
-      # top integral
-      likelihood_int = function(t=1){
-        return(dnorm(Y -  cbind(W[,1],W[,2] - t, W[,3]) %*% theta, 0, sd = psi))
-      }
-
-      # score of integral
-      score_int <- function(t=1,j=1){
-        # generate empty array of values to save
-        # create temporary X matrix
-        Wtemp <- cbind(W[,1], W[,2]- t, W[,3])
-        mu <- Wtemp %*% theta
-        e = Y - mu
-        # score equations for theta
-        dotbeta = (e/psi^2)%*%Wtemp
-        return(c(dotbeta)[j])
-      }
-
-      #top integral#
-      ## switch tt instead of t
-      integral_func_num <- function(t=1,j=1){
-        val = rep(NA, length(t))
-        for (i in 1:length(t)){
-          val[i] = score_int(t[i],j=j)*likelihood_int(t[i])*
-            dweibull(t[i], shape=shape.x, scale = meanXZ) *
-            (1-1/pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE)) # (1-1/pi)
-            # (1-1/(smallnum+pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE))) # (1-1/pi)
-        }
-        return(val)
-      }
-
-      ### Evaluate
-      j_numerator_integrate <- function(jj=1) {
-        integrate(function(y) {integral_func_num(t=y,j=jj)},
-                  lower = lbound, upper = mybound)$value}
-      v.area_num <- Vectorize(j_numerator_integrate)
-      numerator = v.area_num(1:3)
-
-      # bottom integral
-      integral_func_denom <- function(t=1){
-        val = rep(NA, length(t))
-        for (i in 1:length(t)){
-          val[i] = likelihood_int(t[i])*
-            # pweibull(C, shape=gamma, scale = lp, lower.tail = FALSE)
-            dweibull(t[i], shape=shape.x, scale = meanXZ)*
-            (1-1/pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE)) # (1-1/pi)
-            # (1-1/(smallnum+pweibull(t[i], shape=shape.c, scale = meanCYZ, lower.tail = FALSE))) # (1-1/pi)
-        }
-        return(val)
-      }
-
-      ### Evaluate
-      denominator = integrate(integral_func_denom,
-                              lower = lbound, upper = mybound)$value
-
-      # Compute Augmented part
-      return(numerator/denominator)
-    }
-
-    # print(theta)
-    AIPW_est = CCscore()*D/myp + (1 - D/myp)*psi_hat_i() +
-      my_A_aipw%*%(my_A_alpha_inv%*%alpha.jacobian.b(data.b))
-    # print(ACC_est)
-    return(AIPW_est)
-
-  }
-
-  #####################################################
-  # Step 6: Calculate the A and the B matrices
-
-  calculate.B = function(){
-    part1 = lapply(1:nrow(data_yXZ), function(i){
-      dotalpha = aipw.lambda.b(theta = mybeta, data.b = data_yXZ[i,])
-      return(dotalpha %*% t(dotalpha))}
-    )
-    part1 = Reduce("+", part1)
-    return(part1)
-  }
-  myB = calculate.B()
-
-  # A matrix
-  calculate.A = function(){
-    part1 = parallel::mclapply(1:nrow(data_yXZ), function(i)
-      dotalpha = numDeriv::jacobian(function(x)
-        aipw.lambda.b(theta = x, data.b = data_yXZ[i,]), mybeta, method = "Richardson")
-    )
-    part1 = Reduce("+", part1) #/nrow(data_yXZ)
-  }
-  myA = calculate.A()
-  myA.inv = solve(myA)
-
-  # calculate sandwich variance estimate
-  sand.var = myA.inv%*%myB%*%t(myA.inv)
-  sand.var = sqrt(diag(sand.var))
-  # return values
-  return(list(beta_est = mytheta, se_est = sand.var))
-}
-var_aipw_original = var_beta_aipw_est(dat, est_aipw_original$beta_est)
-var_aipw_original
+var_aipw$se_est
 toc()
 ```
 
@@ -1031,19 +308,20 @@ Variance via the dedicated robust sandwiich estimator function:
 ```{r lambda-var, eval = TRUE}
 theta_aipw_lambda <- as.numeric(est_aipw_lambda$beta_est)
 
-tic("AIPW with Lambda Estimator-Robust Sandwich Estimator")
+tic("AIPW with Lambda Estimator-Robust Sandwich Estimator:")
 var_aipw_lambda <- var_beta_aipw_lambda(
   data_yXZ = dat,
   mytheta  = theta_aipw_lambda
 )
-var_aipw_lambda
+var_aipw_lambda$se_est
 toc()
 ```
+
 ---
 
 ## 8. Comparing estimators
 
-Once all estimators have been run, we can collect and compare them:
+Once all estimators have been run, we can collect and compare them. Note that the oracle value is 1 across all. 
 
 ```{r compare-estimators, eval = TRUE}
 compare_beta <- rbind(
@@ -1059,39 +337,18 @@ colnames(compare_beta) = c("beta0", "beta1", "beta2", "sigma")
 compare_beta
 ```
 
-You might also compare **standard errors**:
+The corresponding nuisance-adjusted **standard errors** are:
 
-```{r compare-se robust sandwich estimator, eval = TRUE}
-
-# model based
+```{r compare-se, eval = TRUE}
 se_mat <- rbind(
-  IPW     = est_cc$se_est,
-  IPW     = est_ipw$se_est,
-  AIPW    = est_aipw$beta_se,
-  AIPW_Lambda  = est_aipw_lambda$se_est
-)
-row.names(se_mat) = c("CC", "IPW", "AIPW", "AIPW-Lambda")
-colnames(se_mat) = c("beta0", "beta1", "beta2")
-se_mat
-
-```
-
-```{R}
-# robust sandwich estimator 
-se_rse_mat <- rbind(
   CC      = est_cc$se_est,
   IPW     = var_ipw$se_est,
   MLE     = var_mle$se_beta,
-  AIPW    = var_aipw$se_beta,
+  AIPW    = var_aipw$se_est,
   AIPW_Lambda  = var_aipw_lambda$se_est
 )
 
-row.names(se_rse_mat) = c("CC", "IPW", "MLE", "AIPW", "AIPW-Lambda")
-colnames(se_rse_mat) = c("beta0", "beta1", "beta2")
-se_rse_mat
+row.names(se_mat) = c("CC", "IPW", "MLE", "AIPW", "AIPW-Lambda")
+colnames(se_mat) = c("beta0", "beta1", "beta2")
+se_mat
 ```
-
-These summaries highlight:
-
-- bias of CC under outcome-dependent censoring,  
-- improved efficiency of MLE and AIPW/AIPW–Lambda estimators

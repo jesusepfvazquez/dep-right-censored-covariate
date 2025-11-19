@@ -1,7 +1,8 @@
-## ----setup, include = FALSE---------------------------------------------------
+## ----include = FALSE, eval = TRUE---------------------------------------------
 # devtools::document()   # update documentation + NAMESPACE
 # devtools::load_all()   # reload package into environment
 
+## ----setup, include = FALSE---------------------------------------------------
 rm(list = ls())
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -19,7 +20,7 @@ library(tictoc) # to time the functions
 ## ----simulate-data------------------------------------------------------------
 set.seed(2025)
 
-n <- 100
+n <- 300
 dat <- data_aft(nSubjects = n)
 
 str(dat)
@@ -86,6 +87,7 @@ est_mle = estimate_beta_mle(
     data_yXZ = dat,
     model = model,
     aw_var   = "AW",
+    model_weights = model_weights,
     model_xz = model_xz,
     trace = 0 # Set to 0 if no trace wanted, 1 otherwise
 )
@@ -131,10 +133,6 @@ tic("AIPW Estimator-Robust Sandwich Estimator:")
 var_aipw <- var_beta_aipw(
   data_yXZ = dat,
   theta  = theta_aipw,
-  model = model,
-  model_weights = model_weights,
-  model_xz      = model_xz,
-  aw_var        = "AW",
   lbound        = 0,
   ubound        = 50
 )
@@ -181,7 +179,7 @@ se_mat <- rbind(
   CC      = est_cc$se_est,
   IPW     = var_ipw$se_est,
   MLE     = var_mle$se_beta,
-  AIPW    = var_aipw$se_beta,
+  AIPW    = var_aipw$se_est,
   AIPW_Lambda  = var_aipw_lambda$se_est
 )
 
