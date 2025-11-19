@@ -1,0 +1,27 @@
+# Package index
+
+## Main functions
+
+- [`data_aft()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/data_aft.md)
+  : Simulate AFT data with an outcome-dependent right-censored covariate
+- [`estimate_beta()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/estimate_beta.md)
+  : Estimate regression coefficients via M-estimation
+- [`estimate_beta_cc()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/estimate_beta_cc.md)
+  : Complete-case estimator for regression parameters
+- [`estimate_beta_mle()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/estimate_beta_mle.md)
+  : Likelihood-based estimator via optimx for general AW + Z model
+- [`estimate_beta_ipw()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/estimate_beta_ipw.md)
+  : Inverse probability weighted (IPW) estimator for regression
+  parameters
+- [`estimate_beta_aipw()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/estimate_beta_aipw.md)
+  : Augmented IPW (AIPW) estimator for regression parameters
+- [`estimate_beta_aipw_lambda()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/estimate_beta_aipw_lambda.md)
+  : AIPW lambda-close estimator
+- [`var_beta_mle()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/var_beta_mle.md)
+  : Sandwich variance estimator for likelihood-based estimator
+- [`var_beta_ipw()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/var_beta_ipw.md)
+  : Sandwich variance estimator for the IPW estimator
+- [`var_beta_aipw()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/var_beta_aipw.md)
+  : Sandwich variance estimator for the AIPW estimator
+- [`var_beta_aipw_lambda()`](https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference/var_beta_aipw_lambda.md)
+  : Sandwich variance for the AIPW-lambda estimator
