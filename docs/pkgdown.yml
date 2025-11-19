@@ -1,0 +1,9 @@
+pandoc: 3.6.3
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  ODRCC-tutorial: ODRCC-tutorial.html
+last_built: 2025-11-19T22:59Z
+urls:
+  reference: https://jesusepfvazquez.github.io/dep-right-censored-covariate/reference
+  article: https://jesusepfvazquez.github.io/dep-right-censored-covariate/articles

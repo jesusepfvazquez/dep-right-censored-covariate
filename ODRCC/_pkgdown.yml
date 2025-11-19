@@ -1,0 +1,38 @@
+template:
+  bootstrap: 5
+
+# Build the site into the repo root "docs" folder
+destination: ../docs
+
+# URL for GitHub Pages site
+url: https://jesusepfvazquez.github.io/dep-right-censored-covariate
+
+navbar:
+  structure:
+    left: [reference, articles]
+    right: [github]
+  components:
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    articles:
+      text: "Articles"
+      href: articles/index.html
+    github:
+      text: "GitHub"
+      href: https://github.com/jesusepfvazquez/dep-right-censored-covariate
+
+reference:
+  - title: "Main functions"
+    contents:
+      - data_aft
+      - estimate_beta
+      - estimate_beta_cc
+      - estimate_beta_mle
+      - estimate_beta_ipw
+      - estimate_beta_aipw
+      - estimate_beta_aipw_lambda
+      - var_beta_mle
+      - var_beta_ipw
+      - var_beta_aipw
+      - var_beta_aipw_lambda
