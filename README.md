@@ -42,7 +42,11 @@ devtools::install_github(
 
 ## Tutorial
 
-For a tutorial please check out the vignette.
+For a tutorial please check out the vignette which is available here:
+
+https://jesusepfvazquez.github.io/dep-right-censored-covariate/
+
+It can also be accessed through here:
 
 ```
 # option 1
