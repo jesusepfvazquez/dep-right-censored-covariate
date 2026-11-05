@@ -32,6 +32,16 @@ tables read the per-replicate estimator output, named
 That output is about 218 MB and is not committed here; set the `results_dir`
 and `slurm_dir` parameters in the report header to its location, then knit with
 
+## Full simulation output
+
+The complete per-replicate output is attached to the repository release, split
+into two independently extractable archives:
+
+- [odrcc-sim-main.tar.gz](https://github.com/jesusepfvazquez/dep-right-censored-covariate/releases/download/sim-archive-v1/odrcc-sim-main.tar.gz) (12 MB): main study output plus all driver and estimator code.
+- [odrcc-sim-sensitivity.tar.gz](https://github.com/jesusepfvazquez/dep-right-censored-covariate/releases/download/sim-archive-v1/odrcc-sim-sensitivity.tar.gz) (23 MB): sensitivity study output.
+
+Release: https://github.com/jesusepfvazquez/dep-right-censored-covariate/releases/tag/sim-archive-v1
+
 ```r
 rmarkdown::render("odrcc-reproducibility-report.Rmd")
 ```
