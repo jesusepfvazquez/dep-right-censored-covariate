@@ -6,14 +6,23 @@
 ###############################################################################
 suppressMessages(library(dplyr))
 
-inp <- "Diagnostics-Revision/lambda-diagnostics.csv"
+## Censoring bins: left-closed, right-open, [a, b); the last bin is [90, 100].
+## Round first so that floating-point error does not move boundary replicates
+## (e.g., in R, 0.7 < 7 * 0.1). No reported replicate falls at exactly 90%.
+cens_bin10 <- function(p) {
+  pct <- round(100 * p, 6)
+  lab <- c("[0, 10)", "[10, 20)", "[20, 30)", "[30, 40)", "[40, 50)",
+           "[50, 60)", "[60, 70)", "[70, 80)", "[80, 90)", "[90, 100]")
+  idx <- pmin(floor(pct / 10) + 1, 10)
+  factor(lab[idx], levels = lab)
+}
+
+
+inp <- "data/lambda-diagnostics.csv"
 d   <- read.csv(inp)
 
 ## 10-percentage-point censoring bins, as in the heatmaps
-d$cen_bin <- cut(d$pcen, breaks = seq(0, 1, by = 0.1), right = FALSE,
-                 include.lowest = TRUE,
-                 labels = c("[0,10)","[10,20)","[20,30)","[30,40)","[40,50)",
-                            "[50,60)","[60,70)","[70,80)","[80,90)","[90,100]"))
+d$cen_bin <- cens_bin10(d$pcen)
 
 q95 <- function(x) quantile(x, 0.95, na.rm = TRUE)
 
@@ -31,7 +40,7 @@ summ <- d %>%
     frac_extreme_md = median(frac_extreme, na.rm = TRUE),
     .groups = "drop")
 
-write.csv(summ, "Diagnostics-Revision/lambda-diagnostics-summary.csv",
+write.csv(summ, "data/lambda-diagnostics-summary.csv",
           row.names = FALSE)
 
 cat("\n=== Lambda-hat diagnostics by censoring bin ===\n")
