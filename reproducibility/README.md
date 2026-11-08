@@ -24,6 +24,22 @@ augmentation matrix.
   (one row per reported replicate). The Lambda section of the report runs from
   this file.
 
+- `figures-tables/` — the scripts that produce the simulation figures and
+  tables in the manuscript:
+  - `bias-coverage-stacked-revision.R` and `tables-nuisance.R`: the fixed
+    sample-size study (Figure 1 and Table 2).
+  - `tables-efficiency.R`: the heatmaps of the plane study (absolute percent
+    bias, coverage, efficiency, and replicate counts).
+  - `export-heatmap-cells.R`: exports the exact cell values behind the heatmaps
+    to `heatmap-cells.csv`.
+  - `tables-sensitivity.R`: the sensitivity study figure.
+
+  Censoring rates are grouped into left-closed, right-open bins, `[a, b)`,
+  after rounding, and only cells with at least 100 replicates are shown, which
+  removes the bins below 20% and at or above 90% right-censoring. The scripts
+  read the per-replicate output from the release archives; extract them so the
+  `results/` folders sit at the relative paths named at the top of each script.
+
 ## Reproducing the full report
 
 The completeness audit, the sampling-distribution figures, and the coverage
