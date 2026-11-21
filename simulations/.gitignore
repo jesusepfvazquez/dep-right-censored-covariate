@@ -1,0 +1,6 @@
+results/
+results-*/
+myslurm/
+tables/
+figures/
+*.Rout
