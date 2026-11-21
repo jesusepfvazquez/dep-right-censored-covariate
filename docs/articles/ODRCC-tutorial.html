@@ -5,39 +5,54 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="ODRCC">
 <title>ODRCC Tutorial • ODRCC</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="../deps/jquery-3.6.1/jquery-3.6.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="ODRCC Tutorial">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="ODRCC Tutorial">
+<meta property="og:description" content="ODRCC">
+<!-- mathjax --><script src="file:///usr/share/javascript/mathjax/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
-
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
     <a class="navbar-brand me-2" href="../index.html">ODRCC</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
-
+    
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="active nav-item">
+  <a class="nav-link" href="../articles/index.html">Articles</a>
+</li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/jesusepfvazquez/dep-right-censored-covariate">GitHub</a></li>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/jesusepfvazquez/dep-right-censored-covariate">GitHub</a>
+</li>
       </ul>
 </div>
 
-
+    
   </div>
 </nav><div class="container template-article">
 
@@ -46,13 +61,12 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>ODRCC Tutorial</h1>
-            <h3 data-toc-skip class="subtitle">Robust Estimation with
+      <img src="" class="logo" alt=""><h1>ODRCC Tutorial</h1>
+            <h3 data-toc-skip class="subtitle">Estimation with
 Outcome-Dependent Right-Censored Covariates</h3>
             
       
-
+      
       <div class="d-none name"><code>ODRCC-tutorial.Rmd</code></div>
     </div>
 
@@ -61,502 +75,412 @@ Outcome-Dependent Right-Censored Covariates</h3>
 <div class="section level2">
 <h2 id="introduction">1. Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <code>ODRCC</code> package implements robust and efficient
-estimators for regression models when a key covariate is
-<strong>right-censored in an outcome-dependent way</strong>.</p>
-<p>In many applications, we observe</p>
+<p>The <code>ODRCC</code> package implements estimators for a regression
+model in which a covariate is <strong>right-censored</strong>, and the
+censoring depends on the outcome.</p>
+<p>We observe</p>
 <ul>
-<li>a continuous outcome
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>
-</li>
-<li>fully observed covariates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Z</mi><annotation encoding="application/x-tex">Z</annotation></semantics></math>,</li>
-<li>an auxiliary variable
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
-(represents age),</li>
-<li>a covariate of interest
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>
-that is <strong>right-censored</strong> by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>,<br>
-so we only observe
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>=</mo><mo>min</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo>,</mo><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>D</mi><mo>=</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo>≤</mo><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<li>a continuous outcome <span class="math inline">\(Y\)</span>,</li>
+<li>fully observed covariates <span class="math inline">\(Z\)</span>,</li>
+<li>the age at baseline <span class="math inline">\(A\)</span>,</li>
+<li>a covariate of interest <span class="math inline">\(X\)</span> (the
+age at an event) that is right-censored by <span class="math inline">\(C\)</span>, so we only observe <span class="math display">\[
 W = \min(X, C), \quad D = I(X \le C).
-</annotation></semantics></math>
+\]</span>
 </li>
 </ul>
-<p>A common modeling strategy is to work with the transformed covariate
-(indicating time to event)
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>W</mi><mo>=</mo><mi>A</mi><mo>−</mo><mi>X</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
-AW = A - X,
-</annotation></semantics></math> and fit a regression of the form
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Y</mi><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mi>A</mi><mi>W</mi><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><mi>Z</mi><mo>+</mo><mi>ϵ</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
-Y = \beta_0 + \beta_1 AW + \beta_2 Z + \epsilon,
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math>
-is mean-zero noise.</p>
-<p>The complete-case estimator discards subjects with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">D=0</annotation></semantics></math>,
-leading to:</p>
-<ul>
-<li>loss of efficiency, and<br>
-</li>
-<li>potential <strong>bias</strong> when censoring depends on the
-outcome (outcome-dependent censoring).</li>
-</ul>
-<p><code>ODRCC</code> provides several estimators that remain consistent
-and can improve efficiency:</p>
-<ul>
-<li>
-<strong>IPW</strong>: inverse probability weighting using a model
-for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>∣</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mo>,</mo><mi>Z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">C \mid (Y, Z)</annotation></semantics></math>
-</li>
-<li>
-<strong>MLE</strong>: likelihood-based estimator using a model for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>∣</mo><mi>Z</mi></mrow><annotation encoding="application/x-tex">X \mid Z</annotation></semantics></math>
-</li>
-<li>
-<strong>AIPW</strong>: augmented IPW estimator</li>
-<li>
-<strong>AIPW-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math></strong>:
-a closed-form augmentation variant based on a robust matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>
-adjustment</li>
-</ul>
-<p>This vignette walks through a typical analysis workflow with
-<strong>simulated data</strong>.</p>
+<p>The model of interest is <span class="math display">\[
+Y = \beta_0 + \beta_1 (A - X) + \beta_2 Z + \epsilon, \quad \epsilon
+\sim N(0, \sigma^2),
+\]</span> where <span class="math inline">\(A - X\)</span> is the time
+to the event. The censoring is outcome-dependent: <span class="math inline">\(C\)</span> depends on <span class="math inline">\(Y\)</span>, and <span class="math inline">\(C\)</span> is independent of <span class="math inline">\(X\)</span> given <span class="math inline">\((Y,
+Z)\)</span>.</p>
+<p>Under outcome-dependent censoring, the complete-case estimator, which
+discards the rows with <span class="math inline">\(D = 0\)</span>, is
+not consistent. <code>ODRCC</code> provides estimators that are
+consistent under outcome-dependent censoring when the distributions they
+require are correctly specified:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Estimator</th>
+<th>Requires</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/estimate_beta_ipw.html">estimate_beta_ipw()</a></code></td>
+<td>IPW</td>
+<td><span class="math inline">\(f_{C \mid Y, Z}\)</span></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/estimate_beta_mle.html">estimate_beta_mle()</a></code></td>
+<td>joint MLE</td>
+<td>
+<span class="math inline">\(f_{Y \mid X, Z}\)</span> and <span class="math inline">\(f_{X \mid Z}\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw()</a></code></td>
+<td>unguarded AIPW</td>
+<td><span class="math inline">\(f_{C \mid Y, Z}\)</span></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/estimate_beta_aipw_lambda.html">estimate_beta_aipw_lambda()</a></code></td>
+<td>guarded AIPW</td>
+<td><span class="math inline">\(f_{C \mid Y, Z}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The IPW and AIPW estimators also require a correctly specified mean
+model for <span class="math inline">\(Y\)</span>. Both AIPW estimators
+use a working model for <span class="math inline">\(X\)</span> to gain
+efficiency over the IPW estimator; the guarded AIPW estimator is at
+least as efficient as the IPW estimator asymptotically even when that
+working model is wrong. Every estimator returns estimates of <span class="math inline">\(\theta = (\beta, \sigma)\)</span> and sandwich
+standard errors; the standard errors of the IPW and AIPW estimators
+account for estimating the weights.</p>
+<p>This vignette walks through an analysis with <strong>simulated
+data</strong>.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="load-the-package-and-simulate-data">2. Load the package and simulate data<a class="anchor" aria-label="anchor" href="#load-the-package-and-simulate-data"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Loading <span style="color: #0000BB;">ODRCC</span></span></span>
-<span><span class="co">#&gt; Warning: replacing previous import 'geex::coef' by 'stats::coef' when loading</span></span>
-<span><span class="co">#&gt; 'ODRCC'</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc" class="external-link">tictoc</a></span><span class="op">)</span> <span class="co"># to time the functions</span></span></code></pre></div>
-<p>We will use the internal data-generating function
-<code><a href="../reference/data_aft.html">data_aft()</a></code> which simulates data from an AFT-type model with
-outcome-dependent censoring of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ODRCC</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="../reference/data_aft.html">data_aft()</a></code> simulates one dataset from the design of the
+first simulation study in the manuscript: Weibull models for <span class="math inline">\(X \mid Z\)</span> and <span class="math inline">\(C \mid (Y, Z)\)</span>, and a normal outcome model
+with <span class="math inline">\(\beta = (1, 1, 1)\)</span> and <span class="math inline">\(\sigma = 1\)</span>. The argument
+<code>c_int</code> sets the right-censoring rate; the default gives
+about 66%.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2025</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">300</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/data_aft.html">data_aft</a></span><span class="op">(</span>nSubjects <span class="op">=</span> <span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/data_aft.html">data_aft</a></span><span class="op">(</span>nSubjects <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    300 obs. of  18 variables:</span></span>
-<span><span class="co">#&gt;  $ y             : num  -1.53 1.6 -3.16 4.02 1.65 ...</span></span>
-<span><span class="co">#&gt;  $ Z             : num  0.6208 0.0356 0.7732 1.2725 0.371 ...</span></span>
-<span><span class="co">#&gt;  $ D             : num  1 0 0 1 0 0 1 1 0 1 ...</span></span>
-<span><span class="co">#&gt;  $ A             : num  1.1 1.66 2.1 0.97 1.03 ...</span></span>
-<span><span class="co">#&gt;  $ X             : num  4.261 1.547 6.573 0.417 0.666 ...</span></span>
-<span><span class="co">#&gt;  $ AX            : num  -3.156 0.116 -4.478 0.553 0.361 ...</span></span>
-<span><span class="co">#&gt;  $ C             : num  5.143 0.13 0.152 4.78 0.532 ...</span></span>
-<span><span class="co">#&gt;  $ W             : num  4.261 0.13 0.152 0.417 0.532 ...</span></span>
-<span><span class="co">#&gt;  $ AW            : num  -3.156 1.532 1.943 0.553 0.495 ...</span></span>
-<span><span class="co">#&gt;  $ meanCYZ       : num  7.96 1.25 19.41 0.69 1.44 ...</span></span>
-<span><span class="co">#&gt;  $ meanXZ        : num  2.89 2.73 2.94 3.09 2.82 ...</span></span>
-<span><span class="co">#&gt;  $ b             : int  1 2 3 4 5 6 7 8 9 10 ...</span></span>
-<span><span class="co">#&gt;  $ myp_uniform   : num  0.612 0.139 0.489 0.238 0.8 ...</span></span>
-<span><span class="co">#&gt;  $ myp_ywz_oracle: num [1:300, 1] 0.481 0.724 0.915 0.46 0.544 ...</span></span>
-<span><span class="co">#&gt;  $ myp_ywz       : num  0.57 0.731 0.94 0.525 0.575 ...</span></span>
-<span><span class="co">#&gt;  $ meanXD0YZ     : num  4.914 1.296 6.547 0.895 1.336 ...</span></span>
-<span><span class="co">#&gt;  $ AX_yz         : num  -3.156 0.366 -4.452 0.553 -0.309 ...</span></span>
-<span><span class="co">#&gt;  $ AX_z          : num  -3.156 -1.429 -1.232 0.553 -2.169 ...</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">D</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">#&gt;  0.0000  0.0000  0.0000  0.4367  1.0000  1.0000</span></span></code></pre></div>
-<p>In this simulated dataset:</p>
+<span><span class="co">#&gt; 'data.frame':    1000 obs. of  10 variables:</span></span>
+<span><span class="co">#&gt;  $ y : num  4.07 1.15 1.48 3.23 2.54 ...</span></span>
+<span><span class="co">#&gt;  $ Z : num  0.6208 0.0356 0.7732 1.2725 0.371 ...</span></span>
+<span><span class="co">#&gt;  $ D : num  1 1 0 1 0 0 1 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ A : num  2.874 -0.0767 1.392 0.578 1.2661 ...</span></span>
+<span><span class="co">#&gt;  $ X : num  0.361 0.631 0.684 0.401 1.343 ...</span></span>
+<span><span class="co">#&gt;  $ AX: num  2.5133 -0.7073 0.7085 0.1775 -0.0771 ...</span></span>
+<span><span class="co">#&gt;  $ C : num  0.9357 0.6484 0.0341 0.7095 0.0713 ...</span></span>
+<span><span class="co">#&gt;  $ W : num  0.3607 0.6306 0.0341 0.4005 0.0713 ...</span></span>
+<span><span class="co">#&gt;  $ AW: num  2.513 -0.707 1.358 0.177 1.195 ...</span></span>
+<span><span class="co">#&gt;  $ b : int  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">dat</span><span class="op">$</span><span class="va">D</span><span class="op">)</span>   <span class="co"># right-censoring rate</span></span>
+<span><span class="co">#&gt; [1] 0.678</span></span></code></pre></div>
+<p>In the simulated data,</p>
 <ul>
 <li>
-<code>y</code> = outcome<br>
-</li>
+<code>y</code> is the outcome,</li>
 <li>
-<code>Z</code> = covariate<br>
-</li>
+<code>Z</code> is the covariate,</li>
 <li>
-<code>A</code> = auxiliary variable (age)</li>
+<code>A</code> is the age at baseline,</li>
 <li>
-<code>X</code> = true covariate (subject to censoring)<br>
-</li>
+<code>X</code> is the age at the event (not observed when
+<code>D = 0</code>),</li>
 <li>
-<code>C</code> = censoring time<br>
-</li>
+<code>C</code> is the censoring time,</li>
 <li>
-<code>W</code> = min(X, C)<br>
-</li>
+<code>W</code> = min(X, C) and <code>D</code> = I(X ≤ C),</li>
 <li>
-<code>D</code> = I(X ≤ C)<br>
-</li>
-<li>
-<code>AX</code> = A - X; representing time to event (e.g.,
-diagnosis)</li>
-<li>
-<code>AW</code> = A - W; coarsened version of AX<br>
-</li>
-<li>various weight variables (e.g., <code>myp_ywz</code>,
-<code>myp_ywz_oracle</code>, etc.)</li>
+<code>AX</code> = A − X is the time to the event, and
+<code>AW</code> = A − W.</li>
 </ul>
-<p>For regression we’ll use the working model</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Y</mi><mo>∼</mo><mi>A</mi><mi>W</mi><mo>+</mo><mi>Z</mi></mrow><annotation encoding="application/x-tex">
-Y \sim AW + Z
-</annotation></semantics></math></p>
-<p>which in R is</p>
+<p>Every estimator takes the outcome model with <code>AW</code> in place
+of <span class="math inline">\(A - X\)</span>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="va">y</span> <span class="op">~</span> <span class="va">AW</span> <span class="op">+</span> <span class="va">Z</span></span></code></pre></div>
+<p>The estimators also need the model for <span class="math inline">\(C
+\mid (Y, Z)\)</span> (<code>model_weights</code>) and, for the joint MLE
+and the AIPW estimators, the model for <span class="math inline">\(X
+\mid Z\)</span> (<code>model_xz</code>). Both are Weibull accelerated
+failure time (AFT) models given as one-sided formulas:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model_weights</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">y</span> <span class="op">+</span> <span class="va">Z</span></span>
+<span><span class="va">model_xz</span>      <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Z</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="complete-case-cc-estimator">3. Complete-case (CC) estimator<a class="anchor" aria-label="anchor" href="#complete-case-cc-estimator"></a>
+<h2 id="effective-sample-size-of-the-weights">3. Effective sample size of the weights<a class="anchor" aria-label="anchor" href="#effective-sample-size-of-the-weights"></a>
 </h2>
-<p>The <strong>complete-case</strong> estimator uses only subjects with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">D=1</annotation></semantics></math>
-(uncensored
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>),
-fitting a standard linear model via M-estimation:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">est_cc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_cc.html">estimate_beta_cc</a></span><span class="op">(</span><span class="va">dat</span>, model <span class="op">=</span> <span class="va">model</span><span class="op">)</span></span>
+<p>Before choosing an estimator, compute the effective sample size (ESS)
+of the estimated weights <span class="math inline">\(1/\hat\pi\)</span>
+among the uncensored rows, as a fraction of the number of uncensored
+rows. The ESS requires only the model for <span class="math inline">\(C
+\mid (Y, Z)\)</span>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ess_weights.html">ess_weights</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model_weights</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $ess</span></span>
+<span><span class="co">#&gt; [1] 238.3336</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $ess_frac</span></span>
+<span><span class="co">#&gt; [1] 0.7401664</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $n_uncensored</span></span>
+<span><span class="co">#&gt; [1] 322</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $max_weight</span></span>
+<span><span class="co">#&gt; [1] 17.38874</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $max_weight_share</span></span>
+<span><span class="co">#&gt; [1] 0.01743208</span></span></code></pre></div>
+<p>In the manuscript’s simulations, the IPW and unguarded AIPW
+estimators had bias below 1% and coverage of about 93% or higher when
+the median ESS was at least about 65%, and the guarded AIPW estimator
+needed about 80%. Below these values, a few observations carry most of
+the weight, and the joint MLE is preferable when the model for <span class="math inline">\(X \mid Z\)</span> is credible. In this dataset,
+the ESS is above both values.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="complete-case-cc-estimator">4. Complete-case (CC) estimator<a class="anchor" aria-label="anchor" href="#complete-case-cc-estimator"></a>
+</h2>
+<p>The <strong>complete-case</strong> estimator fits least squares to
+the rows with <span class="math inline">\(D = 1\)</span>. It is included
+for comparison.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">est_cc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_cc.html">estimate_beta_cc</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span><span class="op">)</span></span>
 <span><span class="va">est_cc</span></span>
 <span><span class="co">#&gt; $beta_est</span></span>
-<span><span class="co">#&gt;                                  psi_updated</span></span>
-<span><span class="co">#&gt; [1,] 0.7097358 0.9449989 1.05793   0.9196435</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;    1.039645    1.028424    1.025454    1.023021 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $se_est</span></span>
-<span><span class="co">#&gt;            [,1]       [,2]       [,3]</span></span>
-<span><span class="co">#&gt; [1,] 0.08382001 0.02902404 0.08175951</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 0.232 sec elapsed</span></span></code></pre></div>
-<p><code><a href="../reference/estimate_beta_cc.html">estimate_beta_cc()</a></code> returns:</p>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;  0.08629058  0.05573461  0.05378730          NA</span></span></code></pre></div>
+<p>Each estimator returns a list with</p>
 <ul>
 <li>
-<code>beta_est</code>: a matrix with the regression coefficients and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>ψ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat\psi</annotation></semantics></math>
-</li>
+<code>beta_est</code>: the estimates of <span class="math inline">\((\beta_0, \beta_1, \beta_2, \sigma)\)</span>,
+and</li>
 <li>
-<code>se_est</code>: the corresponding standard errors for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>
-</li>
+<code>se_est</code>: the corresponding sandwich standard
+errors.</li>
 </ul>
-<p>You can inspect them as:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cc_beta</span> <span class="op">&lt;-</span> <span class="va">est_cc</span><span class="op">$</span><span class="va">beta_est</span></span>
-<span><span class="va">cc_se</span>   <span class="op">&lt;-</span> <span class="va">est_cc</span><span class="op">$</span><span class="va">se_est</span></span>
-<span></span>
-<span><span class="va">cc_beta</span></span>
-<span><span class="co">#&gt;                                  psi_updated</span></span>
-<span><span class="co">#&gt; [1,] 0.7097358 0.9449989 1.05793   0.9196435</span></span>
-<span><span class="va">cc_se</span></span>
-<span><span class="co">#&gt;            [,1]       [,2]       [,3]</span></span>
-<span><span class="co">#&gt; [1,] 0.08382001 0.02902404 0.08175951</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="ipw-estimator">4. IPW estimator<a class="anchor" aria-label="anchor" href="#ipw-estimator"></a>
+<h2 id="ipw-estimator">5. IPW estimator<a class="anchor" aria-label="anchor" href="#ipw-estimator"></a>
 </h2>
-<p>The <strong>IPW</strong> estimator uses weights based on the
-estimated probability that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>
-is observed, typically modeling</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi>C</mi><mo>∣</mo><mi>Y</mi><mo>,</mo><mi>Z</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>w</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
-f_{C \mid Y, Z}(w,y,z)
-</annotation></semantics></math></p>
-<p>with an AFT model. In the package version, the user supplies a
-formula for the <strong>weighting model</strong>,
-e.g. <code>~ y + Z</code>, and the function internally fits a Weibull
-AFT via <code>survreg()</code>.</p>
-<p>Here we specify an IPW estimator with an AFT-based weighting
-model:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># outcome model</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="va">y</span> <span class="op">~</span> <span class="va">AW</span> <span class="op">+</span> <span class="va">Z</span></span>
-<span></span>
-<span><span class="co"># weights model: C | Y, Z</span></span>
-<span><span class="va">model_weights</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">y</span> <span class="op">+</span> <span class="va">Z</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"IPW Estimator:"</span><span class="op">)</span></span>
-<span><span class="va">est_ipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_ipw.html">estimate_beta_ipw</a></span><span class="op">(</span></span>
-<span>  data_yXZ      <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>  model         <span class="op">=</span> <span class="va">model</span>,</span>
-<span>  model_weights <span class="op">=</span> <span class="va">model_weights</span></span>
-<span><span class="op">)</span></span>
+<p>The <strong>IPW</strong> estimator weights each uncensored row by
+<span class="math inline">\(1/\hat\pi(W, Y, Z)\)</span>, where <span class="math inline">\(\hat\pi(t, Y, Z) = \hat P(C &gt; t \mid Y,
+Z)\)</span> comes from the Weibull AFT model in
+<code>model_weights</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">est_ipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_ipw.html">estimate_beta_ipw</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_weights <span class="op">=</span> <span class="va">model_weights</span><span class="op">)</span></span>
 <span><span class="va">est_ipw</span></span>
 <span><span class="co">#&gt; $beta_est</span></span>
-<span><span class="co">#&gt;                                  psi_updated</span></span>
-<span><span class="co">#&gt; [1,] 0.896712 0.9327407 1.041258    0.940482</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;   0.8668986   1.0693915   1.0103878   1.0318489 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $se_est</span></span>
-<span><span class="co">#&gt;            [,1]       [,2]       [,3]</span></span>
-<span><span class="co">#&gt; [1,] 0.09242807 0.03129192 0.08593062</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; IPW Estimator:: 0.112 sec elapsed</span></span></code></pre></div>
-<p>Extract coefficients and standard errors:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ipw_beta</span> <span class="op">&lt;-</span> <span class="va">est_ipw</span><span class="op">$</span><span class="va">beta_est</span></span>
-<span><span class="va">ipw_se</span>   <span class="op">&lt;-</span> <span class="va">est_ipw</span><span class="op">$</span><span class="va">se_est</span></span>
-<span></span>
-<span><span class="va">ipw_beta</span></span>
-<span><span class="co">#&gt;                                  psi_updated</span></span>
-<span><span class="co">#&gt; [1,] 0.896712 0.9327407 1.041258    0.940482</span></span>
-<span><span class="va">ipw_se</span></span>
-<span><span class="co">#&gt;            [,1]       [,2]       [,3]</span></span>
-<span><span class="co">#&gt; [1,] 0.09242807 0.03129192 0.08593062</span></span></code></pre></div>
-<p>If you want the robust sandwich SEs from the dedicated variance
-function:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Suppose est_ipw$beta_est is a 1 x p matrix including psi at the end</span></span>
-<span><span class="va">theta_ipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">est_ipw</span><span class="op">$</span><span class="va">beta_est</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"IPW Estimator-Robust Sandwich Estimator:"</span><span class="op">)</span></span>
-<span><span class="va">var_ipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/var_beta_ipw.html">var_beta_ipw</a></span><span class="op">(</span></span>
-<span>  data_yXZ <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>  theta  <span class="op">=</span> <span class="va">theta_ipw</span>,</span>
-<span>  model         <span class="op">=</span> <span class="va">model</span>,</span>
-<span>  model_weights <span class="op">=</span> <span class="va">model_weights</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; IPW sandwich: finished bread (A matrix).</span></span>
-<span><span class="co">#&gt; IPW sandwich: finished meat (B matrix).</span></span>
-<span><span class="va">var_ipw</span><span class="op">$</span><span class="va">se_est</span></span>
-<span><span class="co">#&gt; [1] 0.08722834 0.03090214 0.08429156</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; IPW Estimator-Robust Sandwich Estimator:: 57.557 sec elapsed</span></span></code></pre></div>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;  0.08341094  0.06095926  0.05756211  0.05247438 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $alpha_est</span></span>
+<span><span class="co">#&gt; (Intercept)           y           Z       scale </span></span>
+<span><span class="co">#&gt; -0.54578706  0.09089496  0.12142361  1.48906269</span></span></code></pre></div>
+<p><code>alpha_est</code> holds the fitted coefficients and scale of the
+model for <span class="math inline">\(C \mid (Y, Z)\)</span>.</p>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="maximum-likelihood-estimator-mle">5. Maximum Likelihood estimator (MLE)<a class="anchor" aria-label="anchor" href="#maximum-likelihood-estimator-mle"></a>
+<h2 id="joint-maximum-likelihood-estimator-mle">6. Joint maximum likelihood estimator (MLE)<a class="anchor" aria-label="anchor" href="#joint-maximum-likelihood-estimator-mle"></a>
 </h2>
-<p>The <strong>MLE</strong> approach uses a joint model, combining:</p>
-<ul>
-<li>the outcome model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>Y</mi><mo>∣</mo><mi>X</mi><mo>,</mo><mi>Z</mi></mrow></msub><annotation encoding="application/x-tex">f_{Y \mid X, Z}</annotation></semantics></math>,
-and<br>
-</li>
-<li>a model for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>X</mi><mo>∣</mo><mi>Z</mi></mrow></msub><annotation encoding="application/x-tex">f_{X \mid Z}</annotation></semantics></math>
-(Weibull AFT),</li>
-</ul>
-<p>and integrates over censored
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_xz</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="st">"~Z"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"MLE:"</span><span class="op">)</span></span>
-<span><span class="va">est_mle</span> <span class="op">=</span> <span class="fu"><a href="../reference/estimate_beta_mle.html">estimate_beta_mle</a></span><span class="op">(</span></span>
-<span>    data_yXZ <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>    model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>    aw_var   <span class="op">=</span> <span class="st">"AW"</span>,</span>
-<span>    model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
-<span>    model_xz <span class="op">=</span> <span class="va">model_xz</span>,</span>
-<span>    trace <span class="op">=</span> <span class="fl">0</span> <span class="co"># Set to 0 if no trace wanted, 1 otherwise</span></span>
+<p>The <strong>joint MLE</strong> maximizes the observed-data
+likelihood, integrating <span class="math inline">\(f_{Y \mid X, Z} f_{X
+\mid Z}\)</span> over <span class="math inline">\(x &gt; W\)</span> for
+the censored rows. The model for <span class="math inline">\(X \mid
+Z\)</span> must be estimated <strong>jointly</strong> with the outcome
+model: under outcome-dependent censoring, a model for <span class="math inline">\(X \mid Z\)</span> fitted to <span class="math inline">\((W, D, Z)\)</span> alone is not consistent. The
+joint MLE does not use the weights.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">t_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">est_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_mle.html">estimate_beta_mle</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_xz <span class="op">=</span> <span class="va">model_xz</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Maximizing -- use negfn and neggr</span></span>
 <span><span class="va">est_mle</span></span>
 <span><span class="co">#&gt; $beta_est</span></span>
-<span><span class="co">#&gt; [1] 0.9023008 0.9555097 0.9955888 0.9686213</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $gamma_est</span></span>
-<span><span class="co">#&gt; [1] 0.96285840 0.08246286 0.81313123</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; MLE:: 1221.958 sec elapsed</span></span></code></pre></div>
-<p>The corresponding sandwich variance:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">theta_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">est_mle</span><span class="op">$</span><span class="va">beta_est</span>,<span class="va">est_mle</span><span class="op">$</span><span class="va">gamma_est</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"MLE-Robust Sandwich Estimator:"</span><span class="op">)</span></span>
-<span><span class="va">var_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/var_beta_mle.html">var_beta_mle</a></span><span class="op">(</span></span>
-<span>    data_yXZ <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>    theta <span class="op">=</span> <span class="va">theta_mle</span>,</span>
-<span>    model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>    aw_var   <span class="op">=</span> <span class="st">"AW"</span>,</span>
-<span>    model_xz <span class="op">=</span> <span class="va">model_xz</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">var_mle</span><span class="op">$</span><span class="va">se_beta</span></span>
-<span><span class="co">#&gt; [1] 0.07210658 0.02842251 0.07155912</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; MLE-Robust Sandwich Estimator:: 429.883 sec elapsed</span></span></code></pre></div>
-<hr>
-</div>
-<div class="section level2">
-<h2 id="augmented-ipw-aipw-estimator">6. Augmented IPW (AIPW) estimator<a class="anchor" aria-label="anchor" href="#augmented-ipw-aipw-estimator"></a>
-</h2>
-<p>The <strong>AIPW</strong> estimator combines IPW with an augmentation
-term providing improved efficiency.</p>
-<p>In the package version, you supply:</p>
-<ul>
-<li>
-<code>model</code>: outcome model,
-e.g. <code>y ~ AW + Z</code><br>
-</li>
-<li>
-<code>model_weights</code>: censoring model for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>C</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mo>,</mo><mi>Z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><annotation encoding="application/x-tex">f_{C | (Y, Z)}</annotation></semantics></math>
-</li>
-<li>
-<code>model_xz</code>: covariate structure for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo stretchy="false" form="prefix">|</mo><mi>Z</mi></mrow><annotation encoding="application/x-tex">X | Z</annotation></semantics></math>
-(RHS-only formula, e.g. <code>~ Z</code>)</li>
-</ul>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_xz</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Z</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"AIPW:"</span><span class="op">)</span></span>
-<span><span class="va">est_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw</a></span><span class="op">(</span></span>
-<span>  data_yXZ      <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>  model         <span class="op">=</span> <span class="va">model</span>,</span>
-<span>  model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
-<span>  model_xz      <span class="op">=</span> <span class="va">model_xz</span>,</span>
-<span>  aw_var        <span class="op">=</span> <span class="st">"AW"</span>,</span>
-<span>  lbound        <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  ubound        <span class="op">=</span> <span class="fl">50</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">est_aipw</span></span>
-<span><span class="co">#&gt; $beta_est</span></span>
-<span><span class="co">#&gt;           [,1]      [,2]    [,3]      [,4]</span></span>
-<span><span class="co">#&gt; [1,] 0.8801625 0.9578444 1.12362 0.9381438</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $beta_se</span></span>
-<span><span class="co">#&gt;            [,1]      [,2]      [,3]</span></span>
-<span><span class="co">#&gt; [1,] 0.09291546 0.0327527 0.1126476</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; AIPW:: 1611.002 sec elapsed</span></span></code></pre></div>
-<p>AIPW sandwich SEs:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># est_aipw$beta_est is 1 x p, est_aipw$psi_est is scalar</span></span>
-<span><span class="va">theta_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">est_aipw</span><span class="op">$</span><span class="va">beta_est</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co"># theta_aipw &lt;- c(as.numeric(est_ipw$beta_est))</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"AIPW Estimator-Robust Sandwich Estimator:"</span><span class="op">)</span></span>
-<span><span class="va">var_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/var_beta_aipw.html">var_beta_aipw</a></span><span class="op">(</span></span>
-<span>  data_yXZ <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>  theta  <span class="op">=</span> <span class="va">theta_aipw</span>,</span>
-<span>  lbound        <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  ubound        <span class="op">=</span> <span class="fl">50</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">var_aipw</span><span class="op">$</span><span class="va">se_est</span></span>
-<span><span class="co">#&gt; [1] 0.07964022 0.02990928 0.07936218</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; AIPW Estimator-Robust Sandwich Estimator:: 63.627 sec elapsed</span></span></code></pre></div>
-<hr>
-</div>
-<div class="section level2">
-<h2 id="aipwlambda-estimator-closed-form-augmentation">7. AIPW–Lambda estimator (closed-form augmentation)<a class="anchor" aria-label="anchor" href="#aipwlambda-estimator-closed-form-augmentation"></a>
-</h2>
-<p>The <strong>AIPW–Lambda</strong> estimator uses an approximation to
-the augmentation term that admits a closed-form expression under
-specific modeling assumptions for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>X</mi><mo stretchy="false" form="prefix">|</mo><mi>Z</mi></mrow></msub><annotation encoding="application/x-tex">f_{X | Z}</annotation></semantics></math>.
-This provides a computationally cheaper alternative to full numerical
-AIPW.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"AIPW with Lambda Estimator:"</span><span class="op">)</span></span>
-<span><span class="va">est_aipw_lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw_lambda.html">estimate_beta_aipw_lambda</a></span><span class="op">(</span></span>
-<span>    data_yXZ <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>    model <span class="op">=</span> <span class="va">model</span>,</span>
-<span>    model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
-<span>    aw_var  <span class="op">=</span> <span class="st">"AW"</span></span>
-<span><span class="op">)</span> </span>
-<span><span class="va">est_aipw_lambda</span></span>
-<span><span class="co">#&gt; $beta_est</span></span>
-<span><span class="co">#&gt; [1] 0.8788797 0.9381677 1.0675614 0.9366018</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;    1.018805    0.978193    1.008539    1.005169 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $se_est</span></span>
-<span><span class="co">#&gt;            [,1]      [,2]       [,3]</span></span>
-<span><span class="co">#&gt; [1,] 0.08001977 0.0291584 0.07999267</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; AIPW with Lambda Estimator:: 0.379 sec elapsed</span></span></code></pre></div>
-<p>Variance via the dedicated robust sandwiich estimator function:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">theta_aipw_lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">est_aipw_lambda</span><span class="op">$</span><span class="va">beta_est</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="st">"AIPW with Lambda Estimator-Robust Sandwich Estimator:"</span><span class="op">)</span></span>
-<span><span class="va">var_aipw_lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/var_beta_aipw_lambda.html">var_beta_aipw_lambda</a></span><span class="op">(</span></span>
-<span>  data_yXZ <span class="op">=</span> <span class="va">dat</span>,</span>
-<span>  mytheta  <span class="op">=</span> <span class="va">theta_aipw_lambda</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; AIPW with Lambda Estimator-Robust Sandwich Estimator:: 1.385 sec elapsed</span></span>
-<span><span class="va">var_aipw_lambda</span><span class="op">$</span><span class="va">se_est</span></span>
-<span><span class="co">#&gt; [1] 0.08324157 0.02928765 0.08407404</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;  0.04605888  0.03133730  0.03646234  0.02774436 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $gamma_est</span></span>
+<span><span class="co">#&gt; (Intercept)           Z       scale </span></span>
+<span><span class="co">#&gt;  0.09899783  0.12454612  0.47383151 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $gamma_se</span></span>
+<span><span class="co">#&gt; (Intercept)           Z       scale </span></span>
+<span><span class="co">#&gt;  0.02437205  0.02265179  0.01860881 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $convergence</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $loglik</span></span>
+<span><span class="co">#&gt; [1] -1791.399</span></span>
+<span><span class="va">t_mle</span><span class="op">[</span><span class="st">"elapsed"</span><span class="op">]</span></span>
+<span><span class="co">#&gt; elapsed </span></span>
+<span><span class="co">#&gt;   3.325</span></span></code></pre></div>
+<p><code>gamma_est</code> holds the fitted coefficients and scale of the
+Weibull model for <span class="math inline">\(X \mid Z\)</span>; the
+AIPW estimators below can reuse it through their <code>gamma</code>
+argument.</p>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="comparing-estimators">8. Comparing estimators<a class="anchor" aria-label="anchor" href="#comparing-estimators"></a>
+<h2 id="unguarded-aipw-estimator">7. Unguarded AIPW estimator<a class="anchor" aria-label="anchor" href="#unguarded-aipw-estimator"></a>
 </h2>
-<p>Once all estimators have been run, we can collect and compare them.
-Note that the oracle value is 1 across all.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">compare_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>  CC      <span class="op">=</span> <span class="va">est_cc</span><span class="op">$</span><span class="va">beta_est</span>,</span>
-<span>  IPW     <span class="op">=</span> <span class="va">est_ipw</span><span class="op">$</span><span class="va">beta_est</span>,</span>
-<span>  MLE     <span class="op">=</span> <span class="va">est_mle</span><span class="op">$</span><span class="va">beta_est</span>,</span>
-<span>  AIPW    <span class="op">=</span> <span class="va">est_aipw</span><span class="op">$</span><span class="va">beta_est</span>,</span>
-<span>  AIPW_Lambda  <span class="op">=</span> <span class="va">est_aipw_lambda</span><span class="op">$</span><span class="va">beta_est</span></span>
+<p>The <strong>unguarded AIPW</strong> estimator adds to the IPW
+estimating equation an augmentation term computed by numerical
+integration over a working model for <span class="math inline">\(f_{X
+\mid Y, Z}\)</span>. There are two choices for that working model:</p>
+<ul>
+<li>
+<code>fx_method = "joint"</code> (the default, and the estimator in
+the manuscript): <span class="math inline">\(f_{X \mid Y, Z} \propto
+f_{Y \mid X, Z}\, f_{X \mid Z}\)</span>, with <span class="math inline">\(f_{X \mid Z}\)</span> from the joint MLE;</li>
+<li>
+<code>fx_method = "direct"</code>: a Weibull AFT model for <span class="math inline">\(X \mid (Y, Z)\)</span>,
+<code>survreg(Surv(W, D) ~ y + Z)</code>, fitted to all rows. The fit is
+valid because <span class="math inline">\(C\)</span> is independent of
+<span class="math inline">\(X\)</span> given <span class="math inline">\((Y, Z)\)</span>.</li>
+</ul>
+<p>Either way, the unguarded AIPW estimator stays consistent when the
+model for <span class="math inline">\(C \mid (Y, Z)\)</span> is correct;
+the working model affects only its efficiency.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">t_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">est_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_xz <span class="op">=</span> <span class="va">model_xz</span>,</span>
+<span>                                 model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
+<span>                                 gamma <span class="op">=</span> <span class="va">est_mle</span><span class="op">$</span><span class="va">gamma_est</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="va">est_aipw</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"beta_est"</span>, <span class="st">"se_est"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $beta_est</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;   0.9657076   1.0133896   0.9803782   0.9623656 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $se_est</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;  0.04802015  0.03303415  0.03832223  0.03388324</span></span>
+<span><span class="va">t_aipw</span><span class="op">[</span><span class="st">"elapsed"</span><span class="op">]</span></span>
+<span><span class="co">#&gt; elapsed </span></span>
+<span><span class="co">#&gt;  32.674</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">compare_beta</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CC"</span>, <span class="st">"IPW"</span>, <span class="st">"MLE"</span>, <span class="st">"AIPW"</span>, <span class="st">"AIPW-Lambda"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">compare_beta</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"beta0"</span>, <span class="st">"beta1"</span>, <span class="st">"beta2"</span>, <span class="st">"sigma"</span><span class="op">)</span></span>
-<span><span class="va">compare_beta</span></span>
-<span><span class="co">#&gt;                 beta0     beta1     beta2     sigma</span></span>
-<span><span class="co">#&gt; CC          0.7097358 0.9449989 1.0579300 0.9196435</span></span>
-<span><span class="co">#&gt; IPW         0.8967120 0.9327407 1.0412579 0.9404820</span></span>
-<span><span class="co">#&gt; MLE         0.9023008 0.9555097 0.9955888 0.9686213</span></span>
-<span><span class="co">#&gt; AIPW        0.8801625 0.9578444 1.1236203 0.9381438</span></span>
-<span><span class="co">#&gt; AIPW-Lambda 0.8788797 0.9381677 1.0675614 0.9366018</span></span></code></pre></div>
-<p>The corresponding nuisance-adjusted <strong>standard errors</strong>
-are:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">se_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>  CC      <span class="op">=</span> <span class="va">est_cc</span><span class="op">$</span><span class="va">se_est</span>,</span>
-<span>  IPW     <span class="op">=</span> <span class="va">var_ipw</span><span class="op">$</span><span class="va">se_est</span>,</span>
-<span>  MLE     <span class="op">=</span> <span class="va">var_mle</span><span class="op">$</span><span class="va">se_beta</span>,</span>
-<span>  AIPW    <span class="op">=</span> <span class="va">var_aipw</span><span class="op">$</span><span class="va">se_est</span>,</span>
-<span>  AIPW_Lambda  <span class="op">=</span> <span class="va">var_aipw_lambda</span><span class="op">$</span><span class="va">se_est</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">se_mat</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CC"</span>, <span class="st">"IPW"</span>, <span class="st">"MLE"</span>, <span class="st">"AIPW"</span>, <span class="st">"AIPW-Lambda"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">se_mat</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"beta0"</span>, <span class="st">"beta1"</span>, <span class="st">"beta2"</span><span class="op">)</span></span>
-<span><span class="va">se_mat</span></span>
-<span><span class="co">#&gt;                  beta0      beta1      beta2</span></span>
-<span><span class="co">#&gt; CC          0.08382001 0.02902404 0.08175951</span></span>
-<span><span class="co">#&gt; IPW         0.08722834 0.03090214 0.08429156</span></span>
-<span><span class="co">#&gt; MLE         0.07210658 0.02842251 0.07155912</span></span>
-<span><span class="co">#&gt; AIPW        0.07964022 0.02990928 0.07936218</span></span>
-<span><span class="co">#&gt; AIPW-Lambda 0.08324157 0.02928765 0.08407404</span></span></code></pre></div>
+<span><span class="va">est_aipw_direct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
+<span>                                      fx_method <span class="op">=</span> <span class="st">"direct"</span><span class="op">)</span></span>
+<span><span class="va">est_aipw_direct</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"beta_est"</span>, <span class="st">"se_est"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $beta_est</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;   0.9741616   1.0116024   0.9896559   0.9449052 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $se_est</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;  0.05152369  0.04013111  0.03689638  0.04428025</span></span></code></pre></div>
+<p>When <code>gamma</code> is not supplied,
+<code><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw()</a></code> fits the joint MLE first.</p>
+<hr>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+<div class="section level2">
+<h2 id="guarded-aipw-estimator">8. Guarded AIPW estimator<a class="anchor" aria-label="anchor" href="#guarded-aipw-estimator"></a>
+</h2>
+<p>The <strong>guarded AIPW</strong> estimator uses a closed-form
+augmentation, based on a working normal model for <span class="math inline">\(X \mid Z\)</span> with the mean and standard
+deviation of the fitted Weibull model, and a matrix <span class="math inline">\(\Lambda\)</span> chosen to minimize the asymptotic
+variance. Because of <span class="math inline">\(\Lambda\)</span>, the
+guarded AIPW estimator is at least as efficient as the IPW estimator
+asymptotically, whether or not the working model is correct, and it
+needs no numerical integration.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">est_aipw_lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw_lambda.html">estimate_beta_aipw_lambda</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_xz <span class="op">=</span> <span class="va">model_xz</span>,</span>
+<span>                                             model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
+<span>                                             gamma <span class="op">=</span> <span class="va">est_mle</span><span class="op">$</span><span class="va">gamma_est</span><span class="op">)</span></span>
+<span><span class="va">est_aipw_lambda</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"beta_est"</span>, <span class="st">"se_est"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $beta_est</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;   0.9385177   1.0188632   0.9887905   0.9721681 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $se_est</span></span>
+<span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
+<span><span class="co">#&gt;  0.04604870  0.03261683  0.03612778  0.03470547</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="comparing-estimators">9. Comparing estimators<a class="anchor" aria-label="anchor" href="#comparing-estimators"></a>
+</h2>
+<p>The true values are <span class="math inline">\(\beta = (1, 1,
+1)\)</span> and <span class="math inline">\(\sigma = 1\)</span>.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"CC"</span>                     <span class="op">=</span> <span class="va">est_cc</span>,</span>
+<span>  <span class="st">"IPW"</span>                    <span class="op">=</span> <span class="va">est_ipw</span>,</span>
+<span>  <span class="st">"Joint MLE"</span>              <span class="op">=</span> <span class="va">est_mle</span>,</span>
+<span>  <span class="st">"Unguarded AIPW"</span>         <span class="op">=</span> <span class="va">est_aipw</span>,</span>
+<span>  <span class="st">"Unguarded AIPW, direct"</span> <span class="op">=</span> <span class="va">est_aipw_direct</span>,</span>
+<span>  <span class="st">"Guarded AIPW"</span>           <span class="op">=</span> <span class="va">est_aipw_lambda</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fits</span>, <span class="va">`[[`</span>, <span class="st">"beta_est"</span><span class="op">)</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                        (Intercept)    AW     Z sigma</span></span>
+<span><span class="co">#&gt; CC                           1.040 1.028 1.025 1.023</span></span>
+<span><span class="co">#&gt; IPW                          0.867 1.069 1.010 1.032</span></span>
+<span><span class="co">#&gt; Joint MLE                    1.019 0.978 1.009 1.005</span></span>
+<span><span class="co">#&gt; Unguarded AIPW               0.966 1.013 0.980 0.962</span></span>
+<span><span class="co">#&gt; Unguarded AIPW, direct       0.974 1.012 0.990 0.945</span></span>
+<span><span class="co">#&gt; Guarded AIPW                 0.939 1.019 0.989 0.972</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fits</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="va">f</span><span class="op">$</span><span class="va">se_est</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                        (Intercept)    AW     Z</span></span>
+<span><span class="co">#&gt; CC                           0.086 0.056 0.054</span></span>
+<span><span class="co">#&gt; IPW                          0.083 0.061 0.058</span></span>
+<span><span class="co">#&gt; Joint MLE                    0.046 0.031 0.036</span></span>
+<span><span class="co">#&gt; Unguarded AIPW               0.048 0.033 0.038</span></span>
+<span><span class="co">#&gt; Unguarded AIPW, direct       0.052 0.040 0.037</span></span>
+<span><span class="co">#&gt; Guarded AIPW                 0.046 0.033 0.036</span></span></code></pre></div>
+<p>The complete-case estimator is biased. The joint MLE has the smallest
+standard errors, followed by the AIPW estimators and then the IPW
+estimator.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="reproducing-the-manuscripts-simulations">10. Reproducing the manuscript’s simulations<a class="anchor" aria-label="anchor" href="#reproducing-the-manuscripts-simulations"></a>
+</h2>
+<p>The code that produced the simulation results in the manuscript is in
+the <a href="https://github.com/jesusepfvazquez/dep-right-censored-covariate/tree/main/simulations" class="external-link"><code>simulations/</code></a>
+folder of the repository. With <code>p.c = 1.5</code>,
+<code>set.seed(s); data_aft(1000, c_int, 1.5)</code> reproduces
+replicate <code>s</code> of the first simulation study.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Jesus Vazquez.</p>
+  <p></p>
+<p>Developed by Jesus Vazquez.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
     </footer>
 </div>
 
+  
 
-
-
+  
 
   </body>
 </html>

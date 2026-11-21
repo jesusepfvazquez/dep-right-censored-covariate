@@ -2,40 +2,54 @@
 % Please edit documentation in R/data_aft.R
 \name{data_aft}
 \alias{data_aft}
-\title{Simulate AFT data with an outcome-dependent right-censored covariate}
+\title{Simulate data with an outcome-dependent right-censored covariate}
 \usage{
-data_aft(nSubjects = 10^3)
+data_aft(nSubjects = 1000, c_int = -0.5, p.c = 1.5)
 }
 \arguments{
-\item{nSubjects}{Integer. Number of subjects to simulate. Defaults to \code{10^3}.}
+\item{nSubjects}{Number of subjects. Defaults to 1,000.}
+
+\item{c_int}{Intercept of the censoring model. Defaults to -0.5 (about 66\\%
+right-censoring).}
+
+\item{p.c}{Scale of \eqn{\log C}. Defaults to 1.5.}
 }
 \value{
-A data frame with \code{nSubjects} rows containing:
+A data frame with one row per subject:
 \describe{
-\item{y}{Continuous outcome.}
-\item{Z}{Standard normal covariate.}
-\item{D}{Event indicator \code{I(X <= C)}.}
-\item{A}{Observed auxiliary covariate.}
-\item{X}{True covariate subject to censoring.}
-\item{AX}{\code{A - X}.}
+\item{y}{Outcome.}
+\item{Z}{Fully observed covariate.}
+\item{D}{Indicator that \eqn{X} is observed, \eqn{I(X \le C)}.}
+\item{A}{Age at baseline.}
+\item{X}{Right-censored covariate (age at the event; not observed when \code{D = 0}).}
+\item{AX}{\code{A - X}, the time to the event.}
 \item{C}{Censoring time.}
-\item{W}{\code{min(X, C)}.}
+\item{W}{Observed \code{min(X, C)}.}
 \item{AW}{\code{A - W}.}
-\item{meanCYZ}{Mean of \code{C} given \code{(Y, Z)} on the original scale.}
-\item{meanXZ}{Mean of \code{X} given \code{(Z)} on the original scale.}
 \item{b}{Subject ID.}
-\item{myp_uniform}{Random weights (Uniform(0.1, 0.9)).}
-\item{myp_ywz_oracle}{Oracle survival probability \code{P(C >= W | Y, Z)}.}
-\item{myp_ywz}{Estimated survival probability using a Weibull AFT model.}
-\item{meanXD0YZ}{\eqn{E[X | D = 0, Y, Z]} computed by numerical integration.}
-\item{AX_yz}{\code{A - X} if \code{D = 1}, otherwise \code{A - E[X | D = 0, Y, Z]}.}
-\item{AX_z}{\code{A - X} if \code{D = 1}, otherwise \code{A - E[X | Z]}.}
 }
 }
 \description{
-Generates a simulated dataset under an accelerated failure time (AFT) model
-with a right-censored covariate subject to outcome-dependent censoring.
-The function returns the true covariate \code{X}, censoring time \code{C},
-observed covariate \code{W = min(X, C)}, event indicator \code{D = I(X <= C)},
-and several derived quantities such as weights and conditional expectations.
+Generates one dataset from the design of the first simulation study in the
+manuscript:
+\deqn{\log X = 0.1 + 0.1 Z + 0.5 \log E_X,}
+\deqn{Y = 1 + (A - X) + Z + \epsilon, \quad \epsilon \sim N(0, 1),}
+\deqn{\log C = c_{int} + 0.1 Y + 0.1 Z + p_c \log E_C,}
+with \eqn{Z \sim N(0, 1)}, \eqn{A \sim N(2, 1)}, and \eqn{E_X, E_C \sim}
+Exp(1), so that \eqn{X | Z} and \eqn{C | (Y, Z)} follow Weibull AFT models and
+\eqn{C} is independent of \eqn{X} given \eqn{(Y, Z)}. The intercept
+\code{c_int} sets the right-censoring rate, and \code{p.c} sets the spread of
+\eqn{\log C} (the scale ratio in the manuscript is \code{p.c / 0.5}).
+}
+\details{
+With \code{p.c = 1.5}, \code{c_int = 4.5, 4, 1.5, 1, 0.5, -0.5, -1, -1.5} give
+about 4\\%, 6\\%, 26\\%, 34\\%, 44\\%, 66\\%, 76\\%, and 85\\% right-censoring.
+\code{set.seed(s); data_aft(1000, c_int, 1.5)} reproduces replicate \code{s} of
+the first simulation study.
+}
+\examples{
+set.seed(1)
+dat <- data_aft(500)
+mean(1 - dat$D)   # right-censoring rate
+
 }

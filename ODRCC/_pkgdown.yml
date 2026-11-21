@@ -23,16 +23,15 @@ navbar:
       href: https://github.com/jesusepfvazquez/dep-right-censored-covariate
 
 reference:
-  - title: "Main functions"
+  - title: "Estimators"
     contents:
-      - data_aft
-      - estimate_beta
-      - estimate_beta_cc
-      - estimate_beta_mle
       - estimate_beta_ipw
+      - estimate_beta_mle
       - estimate_beta_aipw
       - estimate_beta_aipw_lambda
-      - var_beta_mle
-      - var_beta_ipw
-      - var_beta_aipw
-      - var_beta_aipw_lambda
+      - estimate_beta_cc
+      - estimate_beta
+  - title: "Diagnostics and data"
+    contents:
+      - ess_weights
+      - data_aft
