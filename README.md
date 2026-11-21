@@ -10,20 +10,21 @@ Vazquez, J. et al. (2025). "Robust Estimation Under Outcome-Dependent Right Cens
 
 The package implements several estimation methods for regression parameters under ODRCC:
 
-| Estimator      | Description                                         |
-|----------------|-----------------------------------------------------|
-| CC             | Complete-case estimator                             |
-| IPW            | Inverse probability weighting estimator             |
-| MLE            | Maximum likelihood estimator                        |
-| AIPW           | Augmented inverse probability weighting             |
-| AIPW-Lambda    | Closed-form AIPW estimator                          |
+| Function                      | Estimator                                                        |
+|-------------------------------|------------------------------------------------------------------|
+| `estimate_beta_ipw()`         | IPW estimator                                                    |
+| `estimate_beta_mle()`         | Joint maximum likelihood estimator                               |
+| `estimate_beta_aipw()`        | Unguarded AIPW estimator (`fx_method = "joint"` or `"direct"`)   |
+| `estimate_beta_aipw_lambda()` | Guarded AIPW estimator                                           |
+| `estimate_beta_cc()`          | Complete-case estimator (for comparison)                         |
+
+Every estimator estimates theta = (beta, sigma) and returns sandwich standard errors.
 
 Additional tools included:
 
-- Data generation via `data_aft()`
-- Modeling for X|Z and C|(Y,Z)
-- Robust sandwich variance estimation
-- Example workflows and simulation templates
+- `ess_weights()`: effective sample size of the IPW weights, to guide the choice of estimator
+- `data_aft()`: the data generator of the first simulation study in the manuscript
+- Weibull AFT models for X | Z and C | (Y, Z), with any number of covariates
 
 ---
 
