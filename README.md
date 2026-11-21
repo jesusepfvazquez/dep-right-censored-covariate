@@ -30,7 +30,7 @@ Additional tools included:
 ## Simulation code
 
 The code for the simulation studies and diagnostics in the manuscript (Figure 1, Table 2,
-the heat maps of the second simulation study, and the diagnostics in the Supplementary
+the heat maps of the second simulation study, the sensitivity analysis, and the diagnostics in the Supplementary
 Material) is in [`simulations/`](simulations/). See [`simulations/README.md`](simulations/README.md)
 for which folder produces which result and how to run it.
 
