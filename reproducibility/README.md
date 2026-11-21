@@ -1,3 +1,6 @@
+> **Note.** This folder documents the previous revision of the manuscript. The code for the
+> current simulation studies is in [`../simulations/`](../simulations/).
+
 # Reproducibility and diagnostic report
 
 This folder documents the computational record behind the simulation study in
