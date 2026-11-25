@@ -21,7 +21,7 @@ outcome, the covariates in \code{model}, the age \code{a_var}, the observed
 
 \item{model}{A formula for the outcome model, \code{y ~ AW + Z1 + ...}, with
 the time-to-event covariate \code{aw_var} on the right-hand side. The outcome
-model is \eqn{Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon},
+model is \eqn{Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon},
 \eqn{\epsilon \sim N(0, \sigma^2)}.}
 
 \item{model_xz}{A one-sided formula for the Weibull AFT model of
@@ -34,8 +34,8 @@ covariates of \code{model} other than \code{aw_var}.}
 
 \item{gamma}{Optional coefficients and scale of the Weibull model for
 \eqn{X | Z} that supply the working moments (as in
-\code{estimate_beta_mle()$gamma_est}). If \code{NULL}, the joint MLE is
-fitted first.}
+\code{estimate_beta_mle()$gamma_est}). If \code{NULL}, the MLE is fitted
+first.}
 
 \item{aw_var}{Name of the column \code{A - W} in \code{model}. Defaults to \code{"AW"}.}
 
@@ -48,12 +48,15 @@ A list with \code{beta_est}, \code{se_est}, \code{converged}, and
 \description{
 Augmented IPW estimator of \eqn{\theta = (\beta, \sigma)} with a closed-form
 augmentation \eqn{\Psi_{closed}} (a working normal model for \eqn{X | Z} with
-the mean and standard deviation of the fitted Weibull model for \eqn{X | Z})
-and the matrix \eqn{\Lambda} that minimizes the asymptotic variance within the
-class \eqn{\Lambda \Psi_{closed}}. Because of \eqn{\Lambda}, the guarded AIPW
-estimator is at least as efficient as the IPW estimator asymptotically,
-whether or not the working model is correct. It is consistent when the model
-for \eqn{C | (Y, Z)} and the mean of the outcome model are correctly specified.
+the mean and standard deviation of the Weibull model for \eqn{X | Z} estimated
+by the MLE) and the matrix \eqn{\Lambda} that minimizes the asymptotic variance
+within the class \eqn{\Lambda \Psi_{closed}}. Because of \eqn{\Lambda}, the
+asymptotic variance of the guarded AIPW estimator never exceeds that of the IPW
+estimator, whether or not the working model is correct. That guarantee
+describes the guarded AIPW estimator as the sample size grows, not at a given
+effective sample size (see \code{\link{ess_weights}}). The guarded AIPW
+estimator is consistent when the model for \eqn{C | (Y, Z)} and the mean of the
+outcome model are correctly specified.
 \eqn{\Lambda} is estimated once, at the IPW estimate, and held fixed. The
 sandwich standard errors account for estimating the weights.
 }

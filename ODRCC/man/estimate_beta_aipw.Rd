@@ -24,7 +24,7 @@ outcome, the covariates in \code{model}, the age \code{a_var}, the observed
 
 \item{model}{A formula for the outcome model, \code{y ~ AW + Z1 + ...}, with
 the time-to-event covariate \code{aw_var} on the right-hand side. The outcome
-model is \eqn{Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon},
+model is \eqn{Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon},
 \eqn{\epsilon \sim N(0, \sigma^2)}.}
 
 \item{model_xz}{A one-sided formula for the Weibull AFT model of
@@ -39,7 +39,7 @@ covariates of \code{model} other than \code{aw_var}.}
 
 \item{gamma}{Optional coefficients and scale of the Weibull model for
 \eqn{X | Z} (as in \code{estimate_beta_mle()$gamma_est}). Used only with
-\code{fx_method = "joint"}; if \code{NULL}, the joint MLE is fitted first.}
+\code{fx_method = "joint"}; if \code{NULL}, the MLE is fitted first.}
 
 \item{tau}{Optional upper limit of the integral over \eqn{X}. The estimator
 stays consistent for any \code{tau}; a finite \code{tau} only changes the
@@ -57,23 +57,29 @@ A list with \code{beta_est}, \code{se_est}, \code{converged}, and
 \code{fx_par} (the parameters of the working model for \eqn{f_{X|Y,Z}}).
 }
 \description{
-Augmented IPW estimator of \eqn{\theta = (\beta, \sigma)} with the efficient
+Augmented IPW estimator of \eqn{\theta = (\beta, \sigma)} with the unguarded
 augmentation function \eqn{\Psi^{eff}_{AIPW}(Y, Z; \theta)} of the manuscript,
 computed by numerical integration over a working model for \eqn{f_{X|Y,Z}}:
 \describe{
-\item{\code{fx_method = "joint"}}{(default, the estimator in the manuscript)
+\item{\code{fx_method = "joint"}}{(default; the choice used in the
+manuscript's simulations and application) Bayes' theorem,
 \eqn{f_{X|Y,Z} \propto f_{Y|X,Z}(y | x, z; \theta) f_{X|Z}(x; \hat\gamma)}, with
-\eqn{\hat\gamma} from the joint MLE (\code{\link{estimate_beta_mle}}) unless
+\eqn{\hat\gamma} from the MLE (\code{\link{estimate_beta_mle}}) unless
 \code{gamma} is supplied.}
 \item{\code{fx_method = "direct"}}{\eqn{f_{X|Y,Z}} is a Weibull AFT model,
-\code{survreg(Surv(W, D) ~ y + Z)}, fitted to all rows; the fit is valid
-because \eqn{C} is independent of \eqn{X} given \eqn{(Y, Z)}.}
+\code{survreg(Surv(W, D) ~ y + Z)}, fitted to all rows. Standard survival
+software can fit this model because \eqn{C} is independent of \eqn{X} given
+\eqn{(Y, Z)}; the Weibull form is a working assumption, and the model is
+misspecified for data from \code{\link{data_aft}}.}
 }
 The unguarded AIPW estimator is consistent when the model for
 \eqn{C | (Y, Z)} and the mean of the outcome model are correctly specified,
-whatever the working model for \eqn{f_{X|Y,Z}}. It is more efficient than the
-IPW estimator when the working model is correct, but it has no such guarantee
-otherwise (see \code{\link{estimate_beta_aipw_lambda}}). The sandwich standard
+whatever the working model for \eqn{f_{X|Y,Z}}. The asymptotic variance of the
+unguarded AIPW estimator is smaller than that of the IPW estimator when
+\eqn{f_{X|Y,Z}} is correctly specified (with \code{fx_method = "joint"}, when
+\eqn{f_{Y|X,Z}} and \eqn{f_{X|Z}} are) and the parameters of the model for
+\eqn{C | (Y, Z)} are independent of \eqn{\theta}; otherwise there is no such
+guarantee (see \code{\link{estimate_beta_aipw_lambda}}). The sandwich standard
 errors account for estimating the weights.
 }
 \examples{

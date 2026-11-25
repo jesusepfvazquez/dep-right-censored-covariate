@@ -177,7 +177,7 @@ guarded AIPW estimator.
 
 ---
 
-## 4. Complete-case (CC) estimator
+## 4. Complete case (CC) estimator
 
 The **CC** estimator fits least squares to the rows with $\Delta = 1$. The CC
 estimator is included for comparison.

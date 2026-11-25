@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimators.R
 \name{estimate_beta_mle}
 \alias{estimate_beta_mle}
-\title{Joint maximum likelihood estimator}
+\title{Maximum likelihood estimator (MLE)}
 \usage{
 estimate_beta_mle(
   data_yXZ,
@@ -21,7 +21,7 @@ outcome, the covariates in \code{model}, the age \code{a_var}, the observed
 
 \item{model}{A formula for the outcome model, \code{y ~ AW + Z1 + ...}, with
 the time-to-event covariate \code{aw_var} on the right-hand side. The outcome
-model is \eqn{Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon},
+model is \eqn{Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon},
 \eqn{\epsilon \sim N(0, \sigma^2)}.}
 
 \item{model_xz}{A one-sided formula for the Weibull AFT model of
@@ -50,15 +50,17 @@ A list with
 }
 }
 \description{
-Estimates \eqn{\theta = (\beta, \sigma)} and the Weibull AFT model for
-\eqn{X | Z} (\code{model_xz}) jointly, by maximizing the observed-data
-likelihood. For a censored row, the likelihood integrates
-\eqn{f_{Y|X,Z} f_{X|Z}} over \eqn{x > W} with a 64-node Gauss-Legendre rule.
-Because the model for \eqn{X | Z} is estimated jointly with the outcome model,
-the joint MLE remains consistent under outcome-dependent censoring (a model
-for \eqn{X | Z} fitted to \eqn{(W, D, Z)} alone would not be). The joint MLE
-does not use a model for \eqn{C | (Y, Z)}; \code{model_weights} is used only
-for the starting values. It is consistent when \eqn{f_{Y|X,Z}} and
+Estimates \eqn{\theta = (\beta, \sigma)} and the parameters \eqn{\gamma} of
+the Weibull AFT model for \eqn{X | Z} (\code{model_xz}) together, by
+maximizing the observed-data likelihood. For a censored row, the likelihood
+integrates \eqn{f_{Y|X,Z} f_{X|Z}} over \eqn{x > W} with a 64-node
+Gauss-Legendre rule. The MLE estimates \eqn{\gamma} together with
+\eqn{\theta} because the estimating equations for \eqn{\gamma} involve
+\eqn{\theta} through \eqn{f_{Y|X,Z}}; fitting the model for \eqn{X | Z} to
+\eqn{(W, D, Z)} alone first, as the two-step MLE does, gives a biased estimator
+under outcome-dependent censoring. The MLE does not use a model for
+\eqn{C | (Y, Z)}; \code{model_weights} is used only for the starting values.
+The MLE is consistent when \eqn{f_{Y|X,Z}}, including its normal errors, and
 \eqn{f_{X|Z}} are correctly specified.
 }
 \examples{
