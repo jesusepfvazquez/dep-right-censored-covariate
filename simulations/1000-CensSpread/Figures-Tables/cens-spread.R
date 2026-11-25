@@ -16,9 +16,9 @@ z <- qnorm(0.975)
 res <- list.files("../results", "^est_results_pc.*\\.csv$", full.names = TRUE) %>% map_df(read.csv) %>% as_tibble()
 
 method_levels <- c("oracle", "ipw-correct", "ipw-est", "aipw-est-joint", "aipw-lambda-est", "mle-joint")
-method_labels <- c("Oracle", "IPW (true pi)", "IPW", "AIPW (unguarded)", "AIPW (guarded)", "MLE (joint)")
+method_labels <- c("Oracle", "IPW (true pi)", "IPW", "AIPW (unguarded)", "AIPW (guarded)", "MLE")
 method_colors <- c("Oracle" = "#CC79A7", "IPW (true pi)" = "#F0E442", "IPW" = "#E69F00",
-                   "AIPW (unguarded)" = "#56B4E9", "AIPW (guarded)" = "#009E73", "MLE (joint)" = "#000000")
+                   "AIPW (unguarded)" = "#56B4E9", "AIPW (guarded)" = "#009E73", "MLE" = "#000000")
 param_labels <- c(beta0 = "beta[0]", beta1 = "beta[A-X]~(A-X)", beta2 = "beta[Z]~(Z)")
 
 ## diverged: a finite estimate more than 10 (1,000% of the true value 1) from the truth.
@@ -63,7 +63,7 @@ tab %>% filter(Parameter == "beta0") %>% select(Method, p.c, target, reps, faile
   mutate(across(where(is.double), ~ round(.x, 2))) %>% arrange(target, Method, p.c) %>% print(n = Inf)
 
 ## 1. line plots against p.c, one per censoring rate (Figure 1 layout)
-show <- c("Oracle", "IPW", "AIPW (unguarded)", "AIPW (guarded)", "MLE (joint)")
+show <- c("Oracle", "IPW", "AIPW (unguarded)", "AIPW (guarded)", "MLE")
 for (tg in sort(unique(tab$target))) {
   d <- tab %>% filter(target == tg, Method %in% show) %>%
     select(Method, p.c, Parameter, bias, coverage) %>%
@@ -114,7 +114,7 @@ heat("bias", "Percent bias (%)", scale_fill_gradient2(low = "#B2182B", mid = "wh
 ## RE > 1: the estimator is more efficient than the IPW estimator (blue); RE < 1: less (red).
 ## Failed and diverged fits are left out (as in the summaries).
 re <- tab %>% filter(Method == "IPW") %>% select(p.c, target, Parameter, mse_ipw = mse, se_ipw = se) %>%
-  right_join(tab %>% filter(Method %in% c("AIPW (unguarded)", "AIPW (guarded)", "MLE (joint)")),
+  right_join(tab %>% filter(Method %in% c("AIPW (unguarded)", "AIPW (guarded)", "MLE")),
              by = c("p.c", "target", "Parameter")) %>%
   mutate(re_mse = mse_ipw / mse, re_se = (se_ipw / se)^2)
 write.csv(re %>% select(Method, p.c, target, Parameter, mse, mse_ipw, re_mse, se, se_ipw, re_se),

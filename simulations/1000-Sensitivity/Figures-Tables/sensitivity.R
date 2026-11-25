@@ -7,7 +7,7 @@ res <- list.files("../results", "^est_results_xi[0-9.]+_seed_[0-9]+\\.csv$",
                   full.names = TRUE) %>% map_df(read.csv) %>% as_tibble()
 
 methods <- c("ipw-est" = "IPW", "aipw-est-joint" = "AIPW (unguarded)",
-             "aipw-lambda-est" = "AIPW (guarded)", "mle-joint" = "MLE (joint)")
+             "aipw-lambda-est" = "AIPW (guarded)", "mle-joint" = "MLE")
 z <- qnorm(0.975)
 
 sens <- res %>%
@@ -35,7 +35,7 @@ p <- sens %>%
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey30") +
   facet_grid(. ~ coef, labeller = label_parsed) +
   scale_color_manual(name = NULL, values = c("IPW" = "#E69F00", "AIPW (unguarded)" = "#56B4E9",
-                                             "AIPW (guarded)" = "#009E73", "MLE (joint)" = "#000000")) +
+                                             "AIPW (guarded)" = "#009E73", "MLE" = "#000000")) +
   labs(x = expression("Sensitivity parameter " * xi), y = "Percent bias (%)") +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom", panel.spacing = unit(0.8, "lines"))

@@ -26,11 +26,11 @@ res <- rd(res_dir) %>% filter(Method %in% c("oracle", "ipw-est", "mle-joint", "a
 if (dir.exists(twostep_dir)) res <- bind_rows(res, rd(twostep_dir) %>% filter(Method == "mle-twostep"))
 
 method_levels <- c("oracle", "ipw-est", "aipw-est-joint", "aipw-lambda-est", "mle-joint", "mle-twostep")
-method_labels <- c("Oracle", "IPW", "AIPW (unguarded)", "AIPW (guarded)", "MLE (joint)", "MLE (two-step)")
+method_labels <- c("Oracle", "IPW", "AIPW (unguarded)", "AIPW (guarded)", "MLE", "MLE (two-step)")
 method_colors <- c("Oracle" = "#CC79A7", "IPW" = "#E69F00", "AIPW (unguarded)" = "#56B4E9",
-                   "AIPW (guarded)" = "#009E73", "MLE (joint)" = "#000000", "MLE (two-step)" = "#3A5FCD")   # royal blue; grey is the ESS shading
+                   "AIPW (guarded)" = "#009E73", "MLE" = "#000000", "MLE (two-step)" = "#3A5FCD")   # royal blue; grey is the ESS shading
 method_lines  <- c("Oracle" = "solid", "IPW" = "solid", "AIPW (unguarded)" = "solid",
-                   "AIPW (guarded)" = "solid", "MLE (joint)" = "solid", "MLE (two-step)" = "dashed")
+                   "AIPW (guarded)" = "solid", "MLE" = "solid", "MLE (two-step)" = "dashed")
 
 long <- res %>%
   filter(if_all(c(beta0, beta1, beta2), ~ is.finite(.x) & abs(.x) < est_threshold)) %>%
