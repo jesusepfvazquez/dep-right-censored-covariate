@@ -25,7 +25,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ODRCC</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,67 +85,89 @@ censoring depends on the outcome.</p>
 <li>the age at baseline <span class="math inline">\(A\)</span>,</li>
 <li>a covariate of interest <span class="math inline">\(X\)</span> (the
 age at an event) that is right-censored by <span class="math inline">\(C\)</span>, so we only observe <span class="math display">\[
-W = \min(X, C), \quad D = I(X \le C).
-\]</span>
-</li>
+W = \min(X, C), \quad \Delta = I(X \le C),
+\]</span> stored in the columns <code>W</code> and <code>D</code>.</li>
 </ul>
 <p>The model of interest is <span class="math display">\[
-Y = \beta_0 + \beta_1 (A - X) + \beta_2 Z + \epsilon, \quad \epsilon
+Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z Z + \epsilon, \quad \epsilon
 \sim N(0, \sigma^2),
 \]</span> where <span class="math inline">\(A - X\)</span> is the time
-to the event. The censoring is outcome-dependent: <span class="math inline">\(C\)</span> depends on <span class="math inline">\(Y\)</span>, and <span class="math inline">\(C\)</span> is independent of <span class="math inline">\(X\)</span> given <span class="math inline">\((Y,
+to the event. The censoring is outcome-dependent: <span class="math inline">\(C\)</span> depends on <span class="math inline">\(Y\)</span> even once <span class="math inline">\((X, Z)\)</span> is accounted for, and <span class="math inline">\(C\)</span> is independent of <span class="math inline">\(X\)</span> given <span class="math inline">\((Y,
 Z)\)</span>.</p>
-<p>Under outcome-dependent censoring, the complete-case estimator, which
-discards the rows with <span class="math inline">\(D = 0\)</span>, is
-not consistent. <code>ODRCC</code> provides estimators that are
-consistent under outcome-dependent censoring when the distributions they
-require are correctly specified:</p>
+<p>Under outcome-dependent censoring, the complete case (CC) estimator,
+which discards the rows with <span class="math inline">\(\Delta =
+0\)</span>, is not generally consistent. <code>ODRCC</code> provides
+estimators that are consistent under outcome-dependent censoring when
+the distributions they require are correctly specified:</p>
 <table class="table">
 <colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
 </colgroup>
 <thead><tr class="header">
 <th>Function</th>
 <th>Estimator</th>
-<th>Requires</th>
+<th>Consistent when correctly specified</th>
+<th>Also uses, for efficiency only</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td><code><a href="../reference/estimate_beta_ipw.html">estimate_beta_ipw()</a></code></td>
 <td>IPW</td>
 <td><span class="math inline">\(f_{C \mid Y, Z}\)</span></td>
+<td></td>
 </tr>
 <tr class="even">
 <td><code><a href="../reference/estimate_beta_mle.html">estimate_beta_mle()</a></code></td>
-<td>joint MLE</td>
+<td>MLE</td>
 <td>
 <span class="math inline">\(f_{Y \mid X, Z}\)</span> and <span class="math inline">\(f_{X \mid Z}\)</span>
 </td>
+<td></td>
 </tr>
 <tr class="odd">
 <td><code><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw()</a></code></td>
 <td>unguarded AIPW</td>
 <td><span class="math inline">\(f_{C \mid Y, Z}\)</span></td>
+<td>
+<span class="math inline">\(f_{X \mid Y, Z}\)</span>; by default
+from <span class="math inline">\(f_{Y \mid X, Z}\)</span> and the <span class="math inline">\(f_{X \mid Z}\)</span> estimated by the MLE</td>
 </tr>
 <tr class="even">
 <td><code><a href="../reference/estimate_beta_aipw_lambda.html">estimate_beta_aipw_lambda()</a></code></td>
 <td>guarded AIPW</td>
 <td><span class="math inline">\(f_{C \mid Y, Z}\)</span></td>
+<td>a working normal model for <span class="math inline">\(X \mid
+Z\)</span>, with moments from the <span class="math inline">\(f_{X \mid
+Z}\)</span> estimated by the MLE</td>
 </tr>
 </tbody>
 </table>
 <p>The IPW and AIPW estimators also require a correctly specified mean
-model for <span class="math inline">\(Y\)</span>. Both AIPW estimators
-use a working model for <span class="math inline">\(X\)</span> to gain
-efficiency over the IPW estimator; the guarded AIPW estimator is at
-least as efficient as the IPW estimator asymptotically even when that
-working model is wrong. Every estimator returns estimates of <span class="math inline">\(\theta = (\beta, \sigma)\)</span> and sandwich
-standard errors; the standard errors of the IPW and AIPW estimators
-account for estimating the weights.</p>
+model for <span class="math inline">\(Y\)</span>; the IPW and AIPW
+estimates of <span class="math inline">\(\beta\)</span> do not require
+normal errors. The MLE requires <span class="math inline">\(f_{Y \mid X,
+Z}\)</span> to be correctly specified, including its normal errors, and
+estimates <span class="math inline">\(f_{X \mid Z}\)</span> jointly with
+<span class="math inline">\(\theta\)</span>. The distributions in the
+last column affect only the efficiency of the AIPW estimators. The
+unguarded AIPW estimator has a smaller asymptotic variance than the IPW
+estimator when <span class="math inline">\(f_{X \mid Y, Z}\)</span> is
+correctly specified; by default, that means <span class="math inline">\(f_{Y \mid X, Z}\)</span> and <span class="math inline">\(f_{X \mid Z}\)</span>, the same distributions the
+MLE requires (Section 7). The asymptotic variance of the guarded AIPW
+estimator never exceeds that of the IPW estimator, whether or not its
+working model is correct (Section 8). Every estimator returns estimates
+of <span class="math inline">\(\theta = (\beta, \sigma)\)</span> and
+sandwich standard errors; the standard errors of the IPW and AIPW
+estimators account for estimating <span class="math inline">\(f_{C \mid
+Y, Z}\)</span>, and those of the MLE account for estimating <span class="math inline">\(f_{X \mid Z}\)</span> jointly with <span class="math inline">\(\theta\)</span>.</p>
 <p>This vignette walks through an analysis with <strong>simulated
-data</strong>.</p>
+data</strong>. The estimators and the guidance below follow the
+manuscript “Matching Estimators to Effective Sample Size Improves
+Inference with Outcome-Dependent Right-Censored Covariates” by Vazquez,
+Ma, Marder, and Garcia.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -153,11 +175,14 @@ data</strong>.</p>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ODRCC</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="../reference/data_aft.html">data_aft()</a></code> simulates one dataset from the design of the
-first simulation study in the manuscript: Weibull models for <span class="math inline">\(X \mid Z\)</span> and <span class="math inline">\(C \mid (Y, Z)\)</span>, and a normal outcome model
-with <span class="math inline">\(\beta = (1, 1, 1)\)</span> and <span class="math inline">\(\sigma = 1\)</span>. The argument
-<code>c_int</code> sets the right-censoring rate; the default gives
-about 66%.</p>
+<p><code><a href="../reference/data_aft.html">data_aft()</a></code> simulates one dataset from the simulation
+design of the manuscript: Weibull AFT models for <span class="math inline">\(X \mid Z\)</span> and <span class="math inline">\(C \mid (Y, Z)\)</span>, and a normal outcome model
+with <span class="math inline">\((\beta_0, \beta_{A-X}, \beta_Z) = (1,
+1, 1)\)</span> and <span class="math inline">\(\sigma = 1\)</span>. The
+argument <code>c_int</code> is the intercept <span class="math inline">\(\tilde\eta_0\)</span> of the model for <span class="math inline">\(\log C\)</span> and sets the right-censoring rate;
+the default gives about 66%. The argument <code>p.c</code> is <span class="math inline">\(\tilde\sigma_\eta\)</span>, the scale of <span class="math inline">\(\log C\)</span>. The scale of <span class="math inline">\(\log X\)</span> is <span class="math inline">\(\tilde\sigma_\gamma = 0.5\)</span>, so the default
+<code>p.c = 1.5</code> gives a scale ratio <span class="math inline">\(\tilde\sigma_\eta / \tilde\sigma_\gamma\)</span>
+of 3.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2025</span><span class="op">)</span></span>
 <span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/data_aft.html">data_aft</a></span><span class="op">(</span>nSubjects <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
@@ -190,35 +215,53 @@ about 66%.</p>
 <li>
 <code>C</code> is the censoring time,</li>
 <li>
-<code>W</code> = min(X, C) and <code>D</code> = I(X ≤ C),</li>
+<code>W</code> = min(X, C) and <code>D</code> = <span class="math inline">\(\Delta\)</span> = I(X ≤ C),</li>
 <li>
 <code>AX</code> = A − X is the time to the event, and
-<code>AW</code> = A − W.</li>
+<code>AW</code> = A − W,</li>
+<li>
+<code>b</code> is the subject ID.</li>
 </ul>
-<p>Every estimator takes the outcome model with <code>AW</code> in place
-of <span class="math inline">\(A - X\)</span>:</p>
+<p>Every estimator takes the outcome model as a formula in the column
+<code>AW</code>. <code>AW</code> equals <span class="math inline">\(A -
+X\)</span> when <span class="math inline">\(\Delta = 1\)</span>; for the
+censored rows, the estimators do not use <code>AW</code> as the value of
+<span class="math inline">\(A - X\)</span>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="va">y</span> <span class="op">~</span> <span class="va">AW</span> <span class="op">+</span> <span class="va">Z</span></span></code></pre></div>
-<p>The estimators also need the model for <span class="math inline">\(C
-\mid (Y, Z)\)</span> (<code>model_weights</code>) and, for the joint MLE
-and the AIPW estimators, the model for <span class="math inline">\(X
-\mid Z\)</span> (<code>model_xz</code>). Both are Weibull accelerated
-failure time (AFT) models given as one-sided formulas:</p>
+<p>The IPW and AIPW estimators also need the model for <span class="math inline">\(C \mid (Y, Z)\)</span>
+(<code>model_weights</code>), and the MLE and the AIPW estimators need
+the model for <span class="math inline">\(X \mid Z\)</span>
+(<code>model_xz</code>); the MLE uses <code>model_weights</code> only
+for its starting values. Both are Weibull accelerated failure time (AFT)
+models given as one-sided formulas:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_weights</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">y</span> <span class="op">+</span> <span class="va">Z</span></span>
 <span><span class="va">model_xz</span>      <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">Z</span></span></code></pre></div>
+<p>The model for <span class="math inline">\(C \mid (Y, Z)\)</span>
+gives <span class="math inline">\(\hat\pi(t, Y, Z) = \hat P(C &gt; t
+\mid Y, Z)\)</span>. Each uncensored row <span class="math inline">\(i\)</span> receives the weight <span class="math inline">\(1/\hat\pi_i\)</span>, where <span class="math inline">\(\hat\pi_i = \hat\pi(W_i, Y_i, Z_i)\)</span> is the
+estimated probability that <span class="math inline">\(X_i\)</span> is
+observed. The IPW and AIPW estimators use these weights; the MLE does
+not.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="effective-sample-size-of-the-weights">3. Effective sample size of the weights<a class="anchor" aria-label="anchor" href="#effective-sample-size-of-the-weights"></a>
 </h2>
 <p>Before choosing an estimator, compute the effective sample size (ESS)
-of the estimated weights <span class="math inline">\(1/\hat\pi\)</span>
-among the uncensored rows, as a fraction of the number of uncensored
-rows. The ESS requires only the model for <span class="math inline">\(C
-\mid (Y, Z)\)</span>.</p>
+of the weights <span class="math inline">\(1/\hat\pi_i\)</span> among
+the uncensored rows, <span class="math display">\[
+\text{ESS} = \frac{\left(\sum_i \Delta_i/\hat\pi_i\right)^2}{\sum_i
+\Delta_i/\hat\pi_i^2},
+\]</span> as a fraction of the number of uncensored rows
+(<code>ess_frac</code>). The ESS is 100% when all weights are equal and
+falls as the weights become more unequal. The ESS requires only the
+model for <span class="math inline">\(C \mid (Y, Z)\)</span>, so the ESS
+can be computed before any estimator is fit.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ess_weights.html">ess_weights</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model_weights</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">ess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ess_weights.html">ess_weights</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model_weights</span><span class="op">)</span></span>
+<span><span class="va">ess</span></span>
 <span><span class="co">#&gt; $ess</span></span>
 <span><span class="co">#&gt; [1] 238.3336</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -234,19 +277,39 @@ rows. The ESS requires only the model for <span class="math inline">\(C
 <span><span class="co">#&gt; $max_weight_share</span></span>
 <span><span class="co">#&gt; [1] 0.01743208</span></span></code></pre></div>
 <p>In the manuscript’s simulations, the IPW and unguarded AIPW
-estimators had bias below 1% and coverage of about 93% or higher when
-the median ESS was at least about 65%, and the guarded AIPW estimator
-needed about 80%. Below these values, a few observations carry most of
-the weight, and the joint MLE is preferable when the model for <span class="math inline">\(X \mid Z\)</span> is credible. In this dataset,
-the ESS is above both values.</p>
+estimators had bias below 1% and coverage of about 92% or higher once
+the median ESS reached about 65%. The guarded AIPW estimator had bias
+below 1% once the median ESS reached about 70%, but needed about 80% for
+the same coverage. The MLE uses no weights, so its bias and coverage did
+not change with the ESS; the MLE depends instead on the model for <span class="math inline">\(X \mid Z\)</span>. The manuscript therefore
+recommends:</p>
+<ul>
+<li>ESS of at least about 65%: the IPW and unguarded AIPW estimators can
+be used;</li>
+<li>ESS of at least about 80%: the guarded AIPW estimator can be used as
+well;</li>
+<li>ESS below about 65%: the MLE is the better choice, provided the
+model for <span class="math inline">\(X \mid Z\)</span> can be specified
+with confidence;</li>
+<li>ESS below about 65% and the model for <span class="math inline">\(X
+\mid Z\)</span> in doubt: neither the IPW and AIPW estimators nor the
+MLE is assured to perform well.</li>
+</ul>
+<p>These levels are medians across datasets from one design, with <span class="math inline">\(n = 1{,}000\)</span> and Weibull distributions for
+<span class="math inline">\(X\)</span> and <span class="math inline">\(C\)</span>. They are guides rather than cutoffs;
+the ESS needed may differ with the sample size, the number of
+covariates, and these distributions. In this dataset, the ESS is 74% of
+the 322 uncensored rows: above 65% but below 80%. The guide therefore
+supports the IPW and unguarded AIPW estimators here, but not yet the
+guarded AIPW estimator.</p>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="complete-case-cc-estimator">4. Complete-case (CC) estimator<a class="anchor" aria-label="anchor" href="#complete-case-cc-estimator"></a>
+<h2 id="complete-case-cc-estimator">4. Complete case (CC) estimator<a class="anchor" aria-label="anchor" href="#complete-case-cc-estimator"></a>
 </h2>
-<p>The <strong>complete-case</strong> estimator fits least squares to
-the rows with <span class="math inline">\(D = 1\)</span>. It is included
-for comparison.</p>
+<p>The <strong>CC</strong> estimator fits least squares to the rows with
+<span class="math inline">\(\Delta = 1\)</span>. The CC estimator is
+included for comparison.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">est_cc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_cc.html">estimate_beta_cc</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span><span class="op">)</span></span>
 <span><span class="va">est_cc</span></span>
@@ -260,11 +323,13 @@ for comparison.</p>
 <p>Each estimator returns a list with</p>
 <ul>
 <li>
-<code>beta_est</code>: the estimates of <span class="math inline">\((\beta_0, \beta_1, \beta_2, \sigma)\)</span>,
-and</li>
+<code>beta_est</code>: the estimates of <span class="math inline">\((\beta_0, \beta_{A-X}, \beta_Z, \sigma)\)</span>,
+with <span class="math inline">\(\beta_{A-X}\)</span> labeled
+<code>AW</code>, and</li>
 <li>
-<code>se_est</code>: the corresponding sandwich standard
-errors.</li>
+<code>se_est</code>: the corresponding sandwich standard errors
+(<code>NA</code> for <span class="math inline">\(\sigma\)</span> from
+the CC estimator).</li>
 </ul>
 <hr>
 </div>
@@ -272,9 +337,7 @@ errors.</li>
 <h2 id="ipw-estimator">5. IPW estimator<a class="anchor" aria-label="anchor" href="#ipw-estimator"></a>
 </h2>
 <p>The <strong>IPW</strong> estimator weights each uncensored row by
-<span class="math inline">\(1/\hat\pi(W, Y, Z)\)</span>, where <span class="math inline">\(\hat\pi(t, Y, Z) = \hat P(C &gt; t \mid Y,
-Z)\)</span> comes from the Weibull AFT model in
-<code>model_weights</code>.</p>
+<span class="math inline">\(1/\hat\pi_i\)</span> (Section 2).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">est_ipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_ipw.html">estimate_beta_ipw</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_weights <span class="op">=</span> <span class="va">model_weights</span><span class="op">)</span></span>
 <span><span class="va">est_ipw</span></span>
@@ -289,20 +352,25 @@ Z)\)</span> comes from the Weibull AFT model in
 <span><span class="co">#&gt; $alpha_est</span></span>
 <span><span class="co">#&gt; (Intercept)           y           Z       scale </span></span>
 <span><span class="co">#&gt; -0.54578706  0.09089496  0.12142361  1.48906269</span></span></code></pre></div>
-<p><code>alpha_est</code> holds the fitted coefficients and scale of the
-model for <span class="math inline">\(C \mid (Y, Z)\)</span>.</p>
+<p><code>alpha_est</code> holds <span class="math inline">\(\hat\eta\)</span>, the coefficients and scale
+(<span class="math inline">\(\tilde\sigma_\eta\)</span>) of the Weibull
+AFT model for <span class="math inline">\(C \mid (Y, Z)\)</span>.</p>
 <hr>
 </div>
 <div class="section level2">
-<h2 id="joint-maximum-likelihood-estimator-mle">6. Joint maximum likelihood estimator (MLE)<a class="anchor" aria-label="anchor" href="#joint-maximum-likelihood-estimator-mle"></a>
+<h2 id="maximum-likelihood-estimator-mle">6. Maximum likelihood estimator (MLE)<a class="anchor" aria-label="anchor" href="#maximum-likelihood-estimator-mle"></a>
 </h2>
-<p>The <strong>joint MLE</strong> maximizes the observed-data
-likelihood, integrating <span class="math inline">\(f_{Y \mid X, Z} f_{X
-\mid Z}\)</span> over <span class="math inline">\(x &gt; W\)</span> for
-the censored rows. The model for <span class="math inline">\(X \mid
-Z\)</span> must be estimated <strong>jointly</strong> with the outcome
-model: under outcome-dependent censoring, a model for <span class="math inline">\(X \mid Z\)</span> fitted to <span class="math inline">\((W, D, Z)\)</span> alone is not consistent. The
-joint MLE does not use the weights.</p>
+<p>The <strong>MLE</strong> maximizes the observed-data likelihood,
+integrating <span class="math inline">\(f_{Y \mid X, Z} f_{X \mid
+Z}\)</span> over <span class="math inline">\(x &gt; W\)</span> for the
+censored rows. The MLE estimates the parameters <span class="math inline">\(\gamma\)</span> of the Weibull model for <span class="math inline">\(X \mid Z\)</span> together with <span class="math inline">\(\theta\)</span>, because the estimating equations
+for <span class="math inline">\(\gamma\)</span> involve <span class="math inline">\(\theta\)</span> through <span class="math inline">\(f_{Y \mid X, Z}\)</span>. Fitting the model for
+<span class="math inline">\(X \mid Z\)</span> to <span class="math inline">\((W, \Delta, Z)\)</span> alone first, as the
+two-step MLE does, gives a biased estimator under outcome-dependent
+censoring. The MLE is consistent when <span class="math inline">\(f_{Y
+\mid X, Z}\)</span>, including its normal errors, and <span class="math inline">\(f_{X \mid Z}\)</span> are correctly specified. The
+MLE does not use the weights; <code>model_weights</code> only sets its
+starting values.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">est_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_mle.html">estimate_beta_mle</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_xz <span class="op">=</span> <span class="va">model_xz</span><span class="op">)</span></span>
@@ -331,11 +399,12 @@ joint MLE does not use the weights.</p>
 <span><span class="co">#&gt; [1] -1791.399</span></span>
 <span><span class="va">t_mle</span><span class="op">[</span><span class="st">"elapsed"</span><span class="op">]</span></span>
 <span><span class="co">#&gt; elapsed </span></span>
-<span><span class="co">#&gt;   3.325</span></span></code></pre></div>
-<p><code>gamma_est</code> holds the fitted coefficients and scale of the
+<span><span class="co">#&gt;   2.916</span></span></code></pre></div>
+<p><code>gamma_est</code> holds <span class="math inline">\(\hat\gamma\)</span>, the coefficients and scale
+(<span class="math inline">\(\tilde\sigma_\gamma\)</span>) of the
 Weibull model for <span class="math inline">\(X \mid Z\)</span>; the
-AIPW estimators below can reuse it through their <code>gamma</code>
-argument.</p>
+AIPW estimators below can reuse <code>gamma_est</code> through their
+<code>gamma</code> argument.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -347,18 +416,29 @@ integration over a working model for <span class="math inline">\(f_{X
 \mid Y, Z}\)</span>. There are two choices for that working model:</p>
 <ul>
 <li>
-<code>fx_method = "joint"</code> (the default, and the estimator in
-the manuscript): <span class="math inline">\(f_{X \mid Y, Z} \propto
-f_{Y \mid X, Z}\, f_{X \mid Z}\)</span>, with <span class="math inline">\(f_{X \mid Z}\)</span> from the joint MLE;</li>
+<code>fx_method = "joint"</code> (the default, and the choice used
+in the manuscript’s simulations and application): Bayes’ theorem, <span class="math inline">\(f_{X \mid Y, Z} \propto f_{Y \mid X, Z}\, f_{X
+\mid Z}\)</span>, with <span class="math inline">\(f_{X \mid Z}\)</span>
+estimated by the MLE;</li>
 <li>
 <code>fx_method = "direct"</code>: a Weibull AFT model for <span class="math inline">\(X \mid (Y, Z)\)</span>,
-<code>survreg(Surv(W, D) ~ y + Z)</code>, fitted to all rows. The fit is
-valid because <span class="math inline">\(C\)</span> is independent of
-<span class="math inline">\(X\)</span> given <span class="math inline">\((Y, Z)\)</span>.</li>
+<code>survreg(Surv(W, D) ~ y + Z)</code>, fitted to all rows. Standard
+survival software can fit this model because <span class="math inline">\(C\)</span> is independent of <span class="math inline">\(X\)</span> given <span class="math inline">\((Y,
+Z)\)</span>. In data from <code><a href="../reference/data_aft.html">data_aft()</a></code>, however, <span class="math inline">\(X\)</span> given <span class="math inline">\((Y,
+Z)\)</span> is not Weibull, so this model is misspecified here; the
+manuscript does not use the direct fit for that reason.</li>
 </ul>
 <p>Either way, the unguarded AIPW estimator stays consistent when the
 model for <span class="math inline">\(C \mid (Y, Z)\)</span> is correct;
-the working model affects only its efficiency.</p>
+the working model affects only its efficiency. The unguarded AIPW
+estimator has a smaller asymptotic variance than the IPW estimator when
+two requirements hold: <span class="math inline">\(f_{X \mid Y,
+Z}\)</span> is correctly specified, and the parameters <span class="math inline">\(\eta\)</span> of <span class="math inline">\(f_{C
+\mid Y, Z}\)</span> are independent of <span class="math inline">\(\theta\)</span>. With
+<code>fx_method = "joint"</code>, <span class="math inline">\(f_{X \mid
+Y, Z}\)</span> is correctly specified when <span class="math inline">\(f_{Y \mid X, Z}\)</span> and <span class="math inline">\(f_{X \mid Z}\)</span> are. When either requirement
+does not hold, nothing prevents the asymptotic variance of the unguarded
+AIPW estimator from exceeding that of the IPW estimator.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">est_aipw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_xz <span class="op">=</span> <span class="va">model_xz</span>,</span>
@@ -375,7 +455,7 @@ the working model affects only its efficiency.</p>
 <span><span class="co">#&gt;  0.04802015  0.03303415  0.03832223  0.03388324</span></span>
 <span><span class="va">t_aipw</span><span class="op">[</span><span class="st">"elapsed"</span><span class="op">]</span></span>
 <span><span class="co">#&gt; elapsed </span></span>
-<span><span class="co">#&gt;  32.674</span></span>
+<span><span class="co">#&gt;  31.234</span></span>
 <span></span>
 <span><span class="va">est_aipw_direct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
 <span>                                      fx_method <span class="op">=</span> <span class="st">"direct"</span><span class="op">)</span></span>
@@ -387,8 +467,12 @@ the working model affects only its efficiency.</p>
 <span><span class="co">#&gt; $se_est</span></span>
 <span><span class="co">#&gt; (Intercept)          AW           Z       sigma </span></span>
 <span><span class="co">#&gt;  0.05152369  0.04013111  0.03689638  0.04428025</span></span></code></pre></div>
-<p>When <code>gamma</code> is not supplied,
-<code><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw()</a></code> fits the joint MLE first.</p>
+<p>When <code>gamma</code> is not supplied and
+<code>fx_method = "joint"</code>, <code><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw()</a></code> fits
+the MLE first. The unguarded AIPW estimator takes longer than the MLE
+(compare <code>t_aipw</code> with <code>t_mle</code>) because the
+unguarded AIPW estimator integrates over <span class="math inline">\(x\)</span> for every row at each step of its
+solver.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -396,11 +480,17 @@ the working model affects only its efficiency.</p>
 </h2>
 <p>The <strong>guarded AIPW</strong> estimator uses a closed-form
 augmentation, based on a working normal model for <span class="math inline">\(X \mid Z\)</span> with the mean and standard
-deviation of the fitted Weibull model, and a matrix <span class="math inline">\(\Lambda\)</span> chosen to minimize the asymptotic
+deviation of the Weibull model for <span class="math inline">\(X \mid
+Z\)</span> estimated by the MLE (<code>gamma</code>), and a matrix <span class="math inline">\(\Lambda\)</span> chosen to minimize the asymptotic
 variance. Because of <span class="math inline">\(\Lambda\)</span>, the
-guarded AIPW estimator is at least as efficient as the IPW estimator
-asymptotically, whether or not the working model is correct, and it
-needs no numerical integration.</p>
+asymptotic variance of the guarded AIPW estimator never exceeds that of
+the IPW estimator, whether or not the working model is correct. That
+guarantee describes the guarded AIPW estimator as the sample size grows,
+not at a given ESS (Section 3). The augmentation and the weights have
+closed forms, so the guarded AIPW estimator needs no numerical
+integration beyond the MLE that supplies <code>gamma</code>; when
+<code>gamma</code> is not supplied,
+<code><a href="../reference/estimate_beta_aipw_lambda.html">estimate_beta_aipw_lambda()</a></code> fits the MLE first.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">est_aipw_lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_beta_aipw_lambda.html">estimate_beta_aipw_lambda</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">model</span>, model_xz <span class="op">=</span> <span class="va">model_xz</span>,</span>
 <span>                                             model_weights <span class="op">=</span> <span class="va">model_weights</span>,</span>
@@ -418,13 +508,13 @@ needs no numerical integration.</p>
 <div class="section level2">
 <h2 id="comparing-estimators">9. Comparing estimators<a class="anchor" aria-label="anchor" href="#comparing-estimators"></a>
 </h2>
-<p>The true values are <span class="math inline">\(\beta = (1, 1,
-1)\)</span> and <span class="math inline">\(\sigma = 1\)</span>.</p>
+<p>The true values are <span class="math inline">\((\beta_0,
+\beta_{A-X}, \beta_Z) = (1, 1, 1)\)</span> and <span class="math inline">\(\sigma = 1\)</span>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"CC"</span>                     <span class="op">=</span> <span class="va">est_cc</span>,</span>
 <span>  <span class="st">"IPW"</span>                    <span class="op">=</span> <span class="va">est_ipw</span>,</span>
-<span>  <span class="st">"Joint MLE"</span>              <span class="op">=</span> <span class="va">est_mle</span>,</span>
+<span>  <span class="st">"MLE"</span>                    <span class="op">=</span> <span class="va">est_mle</span>,</span>
 <span>  <span class="st">"Unguarded AIPW"</span>         <span class="op">=</span> <span class="va">est_aipw</span>,</span>
 <span>  <span class="st">"Unguarded AIPW, direct"</span> <span class="op">=</span> <span class="va">est_aipw_direct</span>,</span>
 <span>  <span class="st">"Guarded AIPW"</span>           <span class="op">=</span> <span class="va">est_aipw_lambda</span></span>
@@ -433,7 +523,7 @@ needs no numerical integration.</p>
 <span><span class="co">#&gt;                        (Intercept)    AW     Z sigma</span></span>
 <span><span class="co">#&gt; CC                           1.040 1.028 1.025 1.023</span></span>
 <span><span class="co">#&gt; IPW                          0.867 1.069 1.010 1.032</span></span>
-<span><span class="co">#&gt; Joint MLE                    1.019 0.978 1.009 1.005</span></span>
+<span><span class="co">#&gt; MLE                          1.019 0.978 1.009 1.005</span></span>
 <span><span class="co">#&gt; Unguarded AIPW               0.966 1.013 0.980 0.962</span></span>
 <span><span class="co">#&gt; Unguarded AIPW, direct       0.974 1.012 0.990 0.945</span></span>
 <span><span class="co">#&gt; Guarded AIPW                 0.939 1.019 0.989 0.972</span></span>
@@ -441,13 +531,23 @@ needs no numerical integration.</p>
 <span><span class="co">#&gt;                        (Intercept)    AW     Z</span></span>
 <span><span class="co">#&gt; CC                           0.086 0.056 0.054</span></span>
 <span><span class="co">#&gt; IPW                          0.083 0.061 0.058</span></span>
-<span><span class="co">#&gt; Joint MLE                    0.046 0.031 0.036</span></span>
+<span><span class="co">#&gt; MLE                          0.046 0.031 0.036</span></span>
 <span><span class="co">#&gt; Unguarded AIPW               0.048 0.033 0.038</span></span>
 <span><span class="co">#&gt; Unguarded AIPW, direct       0.052 0.040 0.037</span></span>
 <span><span class="co">#&gt; Guarded AIPW                 0.046 0.033 0.036</span></span></code></pre></div>
-<p>The complete-case estimator is biased. The joint MLE has the smallest
-standard errors, followed by the AIPW estimators and then the IPW
-estimator.</p>
+<p>One dataset cannot show bias. Here, each coefficient estimated by the
+CC estimator is within one standard error of its true value; across
+3,000 datasets at 66% right-censoring, the CC estimator had 8.4% bias on
+<span class="math inline">\(\beta_0\)</span> and 82.8% coverage
+(manuscript, section “Correctly specified and misspecified
+distributions”). The MLE and both AIPW estimators have standard errors
+well below those of the IPW estimator, and the standard errors of the
+MLE and the guarded AIPW estimator are close. A small standard error
+alone does not make an estimator the right choice. At the ESS of this
+dataset, the guide in Section 3 supports the IPW and unguarded AIPW
+estimators but not yet the guarded AIPW estimator. The MLE relies
+instead on the model for <span class="math inline">\(X \mid Z\)</span>,
+which is correct here because <code><a href="../reference/data_aft.html">data_aft()</a></code> generates <span class="math inline">\(X\)</span> from a Weibull model for <span class="math inline">\(X \mid Z\)</span>.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -455,9 +555,18 @@ estimator.</p>
 </h2>
 <p>The code that produced the simulation results in the manuscript is in
 the <a href="https://github.com/jesusepfvazquez/dep-right-censored-covariate/tree/main/simulations" class="external-link"><code>simulations/</code></a>
-folder of the repository. With <code>p.c = 1.5</code>,
-<code>set.seed(s); data_aft(1000, c_int, 1.5)</code> reproduces
-replicate <code>s</code> of the first simulation study.</p>
+folder of the repository; that code implements the estimators itself
+rather than calling <code>ODRCC</code>. <code><a href="../reference/data_aft.html">data_aft()</a></code> draws
+the same random numbers in the same order, so
+<code>set.seed(s); data_aft(1000, c_int)</code> regenerates dataset
+<code>s</code> (seeds 0 to 2,999) of the simulations that vary the
+right-censoring rate, with the <code>c_int</code> values listed in
+<code><a href="../reference/data_aft.html">?data_aft</a></code>. The default <code>c_int = -0.5</code> gives the
+66% datasets of the manuscript’s section “Correctly specified and
+misspecified distributions”. The simulations that vary the scale ratio
+at fixed right-censoring rates also set <code>p.c</code>; their
+<code>c_int</code> values are in
+<code>simulations/1000-CensSpread/main.R</code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimators.R
 \name{estimate_beta_cc}
 \alias{estimate_beta_cc}
-\title{Complete-case estimator}
+\title{Complete case (CC) estimator}
 \usage{
 estimate_beta_cc(data_yXZ, model, aw_var = "AW", a_var = "A")
 }
@@ -13,7 +13,7 @@ outcome, the covariates in \code{model}, the age \code{a_var}, the observed
 
 \item{model}{A formula for the outcome model, \code{y ~ AW + Z1 + ...}, with
 the time-to-event covariate \code{aw_var} on the right-hand side. The outcome
-model is \eqn{Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon},
+model is \eqn{Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon},
 \eqn{\epsilon \sim N(0, \sigma^2)}.}
 
 \item{aw_var}{Name of the column \code{A - W} in \code{model}. Defaults to \code{"AW"}.}
@@ -26,8 +26,8 @@ A list with \code{beta_est} (coefficients and \code{sigma}) and
 }
 \description{
 Least squares on the rows with \code{D = 1}. Under outcome-dependent
-right-censoring, the complete-case estimator is not consistent; it is included
-for comparison.
+right-censoring, the CC estimator is not generally consistent; the CC estimator
+is included for comparison.
 }
 \examples{
 set.seed(1)

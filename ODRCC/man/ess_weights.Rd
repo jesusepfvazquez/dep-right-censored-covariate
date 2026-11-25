@@ -23,10 +23,17 @@ the weights).
 Computes the Kish effective sample size of the weights \eqn{1 / \hat\pi(W, Y, Z)}
 among the uncensored rows, \eqn{(\sum w)^2 / \sum w^2}, and reports it as a
 fraction of the number of uncensored rows. In the manuscript's simulations, the
-IPW and unguarded AIPW estimators had small bias and near-nominal coverage when
-this fraction was at least about 65\\%, and the guarded AIPW estimator when it was
-at least about 80\\%; below these values, the joint MLE is preferable when the model
-for \eqn{X | Z} is credible.
+IPW and unguarded AIPW estimators had bias below 1\\% and coverage of about 92\\%
+or higher once the median fraction reached about 65\\%. The guarded AIPW
+estimator had bias below 1\\% from about 70\\%, but needed about 80\\% for the
+same coverage. The manuscript therefore recommends the IPW and unguarded AIPW
+estimators when the fraction is at least about 65\\%, and the guarded AIPW
+estimator as well when the fraction is at least about 80\\%. Below about 65\\%,
+the MLE is the better choice, provided the model for \eqn{X | Z} can be
+specified with confidence; when the model for \eqn{X | Z} is also in doubt,
+neither the IPW and AIPW estimators nor the MLE is assured to perform well.
+These levels are medians from one design (\eqn{n = 1000}, Weibull
+distributions for \eqn{X} and \eqn{C}) and are guides rather than cutoffs.
 }
 \examples{
 set.seed(1)

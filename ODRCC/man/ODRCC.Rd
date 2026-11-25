@@ -6,23 +6,26 @@
 \alias{ODRCC}
 \title{ODRCC: estimators for regression with an outcome-dependent right-censored covariate}
 \description{
-The ODRCC package implements the estimators in the manuscript for a linear
-model \eqn{Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon} when the
+The ODRCC package implements the estimators in the manuscript "Matching
+Estimators to Effective Sample Size Improves Inference with Outcome-Dependent
+Right-Censored Covariates" (Vazquez, Ma, Marder, and Garcia) for a linear
+model \eqn{Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon} when the
 covariate \eqn{X} is right-censored by \eqn{C} and the censoring depends on the
 outcome (\eqn{C} is independent of \eqn{X} given \eqn{(Y, Z)}):
 \itemize{
 \item \code{\link{estimate_beta_ipw}}: the IPW estimator;
-\item \code{\link{estimate_beta_mle}}: the joint MLE;
+\item \code{\link{estimate_beta_mle}}: the MLE;
 \item \code{\link{estimate_beta_aipw}}: the unguarded AIPW estimator;
 \item \code{\link{estimate_beta_aipw_lambda}}: the guarded AIPW estimator;
 \item \code{\link{estimate_beta_cc}} and \code{\link{estimate_beta}}: the
-complete-case, oracle, and naive estimators, for comparison;
+CC, oracle, and naive estimators, for comparison;
 \item \code{\link{ess_weights}}: the effective sample size of the IPW weights,
 which guides the choice between the estimators;
-\item \code{\link{data_aft}}: the data generator of the first simulation study.
+\item \code{\link{data_aft}}: the data generator of the manuscript's simulations.
 }
 Every estimator returns estimates of \eqn{\theta = (\beta, \sigma)} and sandwich
-standard errors.
+standard errors (\code{NA} for \eqn{\sigma} from the CC estimator and from
+\code{\link{estimate_beta}}).
 }
 \author{
 Jesus E. Vazquez

@@ -1,3 +1,13 @@
+# ODRCC 0.2.1
+
+Documentation only; the estimators are unchanged.
+
+* The vignette and help pages follow the revised manuscript: "the MLE" replaces
+  "the joint MLE", the help page of `ess_weights()` gives the manuscript's
+  recommendation by effective sample size, and the help page of
+  `estimate_beta_aipw()` states what the efficiency gain of the unguarded AIPW
+  estimator requires.
+
 # ODRCC 0.2.0
 
 The estimators now match the revised manuscript and the code in `simulations/`.

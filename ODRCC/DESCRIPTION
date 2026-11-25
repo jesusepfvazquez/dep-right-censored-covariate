@@ -1,16 +1,17 @@
 Package: ODRCC
 Title: Tools for Modeling and Inference with Outcome-Dependent Right-Censored Covariates
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person("Jesus", "Vazquez", role = c("aut", "cre"),
            email = "jesusepfvazquez@gmail.com")
 Description: Estimators for a linear regression model with a right-censored
     covariate when the censoring depends on the outcome: the inverse probability
-    weighting (IPW) estimator, the joint maximum likelihood estimator, and the
+    weighting (IPW) estimator, the maximum likelihood estimator (MLE), and the
     unguarded and guarded augmented IPW (AIPW) estimators, each with sandwich
     standard errors, plus the effective sample size of the IPW weights. The
-    methods accompany the manuscript by Vazquez, Ma, Marder, and Garcia on
-    outcome-dependent right-censored covariates, motivated by Huntington disease.
+    methods accompany the manuscript "Matching Estimators to Effective Sample
+    Size Improves Inference with Outcome-Dependent Right-Censored Covariates" by
+    Vazquez, Ma, Marder, and Garcia, motivated by Huntington disease.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: 

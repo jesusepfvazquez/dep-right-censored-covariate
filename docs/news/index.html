@@ -9,7 +9,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ODRCC</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,11 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="odrcc-021">ODRCC 0.2.1<a class="anchor" aria-label="anchor" href="#odrcc-021"></a></h2>
+<p>Documentation only; the estimators are unchanged.</p>
+<ul><li>The vignette and help pages follow the revised manuscript: “the MLE” replaces “the joint MLE”, the help page of <code><a href="../reference/ess_weights.html">ess_weights()</a></code> gives the manuscript’s recommendation by effective sample size, and the help page of <code><a href="../reference/estimate_beta_aipw.html">estimate_beta_aipw()</a></code> states what the efficiency gain of the unguarded AIPW estimator requires.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="odrcc-020">ODRCC 0.2.0<a class="anchor" aria-label="anchor" href="#odrcc-020"></a></h2>
 <p>The estimators now match the revised manuscript and the code in <code>simulations/</code>.</p>
 <ul><li>All estimators estimate theta = (beta, sigma) jointly and return sandwich standard errors directly in <code>se_est</code>. The <code>var_beta_*()</code> functions are removed.</li>
@@ -57,7 +62,8 @@
 <li>Any number of covariates in the outcome model, <code>model_xz</code>, and <code>model_weights</code>.</li>
 <li>Dependencies reduced to survival and numDeriv.</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

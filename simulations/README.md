@@ -1,16 +1,16 @@
 # Simulation code
 
-This folder has the code for the two simulation studies and the sensitivity analysis in the
+This folder has the code for the simulation studies and the sensitivity analysis in the
 manuscript, and for the diagnostics in the Supplementary Material. Each study folder is self-contained: it sources
 only its own helper files and does not need the `ODRCC` package. The per-replicate results
 are not included because of their size. Every result is regenerated from its seed.
 
 | Folder | Produces |
 |---|---|
-| `1000-Main/` | First simulation study (fixed n = 1,000; eight right-censoring rates from about 4% to 85%; 3,000 replicates each): Figure 1 |
-| `1000-Main/Fig1-TwoStep/` | The two-step MLE curve and the median ESS shading in Figure 1 (same datasets as `1000-Main/`) |
-| `1000-Main/Table2-66/` | Table 2 (the 66% right-censoring point of Figure 1, same 3,000 datasets; correct, estimated, and incorrect specifications) |
-| `1000-CensSpread/` | Second simulation study (scale ratio by right-censoring rate; 1,000 replicates per configuration): the heat maps of median ESS, percent bias, coverage, and MSE ratio |
+| `1000-Main/` | Section "Varying the ESS through the right-censoring rate" (n = 1,000; eight right-censoring rates from about 4% to 85%; 3,000 replicates each): the figure of bias, coverage, and median ESS by right-censoring rate |
+| `1000-Main/Fig1-TwoStep/` | The two-step MLE curve and the median ESS shading in that figure (same datasets as `1000-Main/`) |
+| `1000-Main/Table2-66/` | The table in Section "Correctly specified and misspecified distributions" (the 66% right-censoring datasets of `1000-Main/`; known, estimated, and misspecified distributions) |
+| `1000-CensSpread/` | Section "Varying the ESS at fixed right-censoring rates" (scale ratio by right-censoring rate; 1,000 replicates per configuration): the heat maps of median ESS, percent bias, coverage, and MSE ratio |
 | `1000-Sensitivity/` | Sensitivity analysis for the assumption that $C$ is independent of $X$ given $(Y, Z)$ (n = 800, about 78% right-censoring, 3,001 replicates per value of the sensitivity parameter): the sensitivity figure |
 | `Lambda-Diagnostics/` | The diagnostics of the weights and of the guarded AIPW matrix in the Supplementary Material, for both studies |
 
