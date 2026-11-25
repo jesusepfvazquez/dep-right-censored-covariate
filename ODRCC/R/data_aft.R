@@ -1,25 +1,28 @@
 #' Simulate data with an outcome-dependent right-censored covariate
 #'
-#' Generates one dataset from the design of the first simulation study in the
-#' manuscript:
+#' Generates one dataset from the simulation design of the manuscript:
 #' \deqn{\log X = 0.1 + 0.1 Z + 0.5 \log E_X,}
 #' \deqn{Y = 1 + (A - X) + Z + \epsilon, \quad \epsilon \sim N(0, 1),}
 #' \deqn{\log C = c_{int} + 0.1 Y + 0.1 Z + p_c \log E_C,}
 #' with \eqn{Z \sim N(0, 1)}, \eqn{A \sim N(2, 1)}, and \eqn{E_X, E_C \sim}
 #' Exp(1), so that \eqn{X | Z} and \eqn{C | (Y, Z)} follow Weibull AFT models and
 #' \eqn{C} is independent of \eqn{X} given \eqn{(Y, Z)}. The intercept
-#' \code{c_int} sets the right-censoring rate, and \code{p.c} sets the spread of
-#' \eqn{\log C} (the scale ratio in the manuscript is \code{p.c / 0.5}).
+#' \code{c_int} (\eqn{\tilde\eta_0} in the manuscript) sets the right-censoring
+#' rate, and \code{p.c} (\eqn{\tilde\sigma_\eta}) is the scale of \eqn{\log C}.
+#' The scale of \eqn{\log X} is \eqn{\tilde\sigma_\gamma = 0.5}, so the scale
+#' ratio \eqn{\tilde\sigma_\eta / \tilde\sigma_\gamma} in the manuscript is
+#' \code{p.c / 0.5}.
 #'
 #' With \code{p.c = 1.5}, \code{c_int = 4.5, 4, 1.5, 1, 0.5, -0.5, -1, -1.5} give
 #' about 4\%, 6\%, 26\%, 34\%, 44\%, 66\%, 76\%, and 85\% right-censoring.
-#' \code{set.seed(s); data_aft(1000, c_int, 1.5)} reproduces replicate \code{s} of
-#' the first simulation study.
+#' \code{set.seed(s); data_aft(1000, c_int, 1.5)} regenerates dataset \code{s} of
+#' the manuscript's simulations that vary the right-censoring rate (the code in
+#' \code{simulations/} draws the same random numbers in the same order).
 #'
 #' @param nSubjects Number of subjects. Defaults to 1,000.
 #' @param c_int Intercept of the censoring model. Defaults to -0.5 (about 66\%
 #'   right-censoring).
-#' @param p.c Scale of \eqn{\log C}. Defaults to 1.5.
+#' @param p.c Scale of \eqn{\log C}, \eqn{\tilde\sigma_\eta}. Defaults to 1.5.
 #'
 #' @return A data frame with one row per subject:
 #' \describe{

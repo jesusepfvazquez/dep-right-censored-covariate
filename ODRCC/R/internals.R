@@ -150,7 +150,7 @@
 }
 
 ## ---------------------------------------------------------------------------------
-## joint MLE of (theta, gamma); p = (b0, b1, bz, log sigma, gamma, log sx)
+## MLE of (theta, gamma), estimated together; p = (b0, b1, bz, log sigma, gamma, log sx)
 ## censored-row integrals: 64-node Gauss-Legendre rule around the peak of f(y | x, z)
 ## ---------------------------------------------------------------------------------
 .gauss_legendre <- function(k) {

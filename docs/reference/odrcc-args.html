@@ -9,7 +9,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ODRCC</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,7 @@ outcome, the covariates in <code>model</code>, the age <code>a_var</code>, the o
 <dt>model</dt>
 <dd><p>A formula for the outcome model, <code>y ~ AW + Z1 + ...</code>, with
 the time-to-event covariate <code>aw_var</code> on the right-hand side. The outcome
-model is \(Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon\),
+model is \(Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon\),
 \(\epsilon \sim N(0, \sigma^2)\).</p></dd>
 
 

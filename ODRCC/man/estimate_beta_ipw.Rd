@@ -19,7 +19,7 @@ outcome, the covariates in \code{model}, the age \code{a_var}, the observed
 
 \item{model}{A formula for the outcome model, \code{y ~ AW + Z1 + ...}, with
 the time-to-event covariate \code{aw_var} on the right-hand side. The outcome
-model is \eqn{Y = \beta_0 + \beta_1 (A - X) + \beta_Z' Z + \epsilon},
+model is \eqn{Y = \beta_0 + \beta_{A-X} (A - X) + \beta_Z' Z + \epsilon},
 \eqn{\epsilon \sim N(0, \sigma^2)}.}
 
 \item{model_weights}{A one-sided formula for the Weibull AFT model of
